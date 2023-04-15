@@ -1,5 +1,24 @@
 plugins {
     id 'org.ajoberstar.grgit' version '2.3.0'
+    id "org.sonarqube" version "4.0.0.2929"
+}
+
+sonarqube {
+    properties {
+        // SonarQube server URL
+        property "sonar.host.url", "http://localhost:9000"
+
+        // Project metadata
+        property "sonar.projectKey", "MegaMek"
+
+        // Encoding of source files
+        property "sonar.sourceEncoding", "UTF-8"
+
+        // Amount of memory to allocate to the SonarQube analysis process
+        property "sonar.jvmArgs", "-Xmx8g -Xms8g"
+
+        property "sonar.log.level", "INFO"
+    }
 }
 
 allprojects {
