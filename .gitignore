@@ -1,3 +1,6 @@
+# LittleDarwin
+/LittleDarwinResults/*
+
 /.metadata
 /.recommenders/
 /RemoteSystemsTempFiles/
@@ -83,3 +86,4 @@ build/
 /megamek/Entity Issues.txt
 /megamek/apidocs/
 #End MegaMek Other Outputs
+littledarwin_whitelist.txt
