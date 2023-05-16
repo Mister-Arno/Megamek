@@ -34,6 +34,8 @@ public interface IPlayer extends ITurnOrdered {
 
     Vector<Minefield> getMinefields();
 
+    int getEloRating();
+    void setEloRating(int eloRating);
     void addMinefield(Minefield mf);
 
     void addMinefields(Vector<Minefield> minefields);

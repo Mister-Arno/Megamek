@@ -34,6 +34,8 @@ public final class Player extends TurnOrdered implements IPlayer {
     private String name;
     private int id;
 
+    private int eloRating;
+
     private int team = TEAM_NONE;
 
     private boolean done = false; // done with phase
@@ -76,6 +78,15 @@ public final class Player extends TurnOrdered implements IPlayer {
      * player's request to chang teams.
      */
     private boolean allowingTeamChange = false;
+
+    @Override
+    public int getEloRating() {
+        return eloRating;
+    }
+    @Override
+    public void setEloRating(int eloRating) {
+        this.eloRating = eloRating;
+    }
 
     @Override
     public Vector<Minefield> getMinefields() {
