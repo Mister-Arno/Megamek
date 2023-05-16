@@ -25,6 +25,22 @@ public class DedicatedServer {
     private static final String ARGUMENTS_DESCRIPTION_MESSAGE = "Arguments syntax:\n\t "
             + "[-password <pass>] [-port <port>] [<saved game>]";
 
+    private static void startServer(String saveGameFileName, int usePort, String announceUrl, String password){
+        try {
+            if (password == null || password.length() == 0) {
+                password = PreferenceManager.getClientPreferences().getLastServerPass();
+            }
+            Server dedicated = new Server(password, usePort, !announceUrl.equals(""), announceUrl);
+
+            if (null != saveGameFileName) {
+                dedicated.loadGame(new File(saveGameFileName));
+            }
+        } catch (IOException ex) {
+                MegaMek.getLogger().error("Error: could not start server at localhost" + ":" + usePort + " ("
+                        + ex.getMessage() + ").");
+            }
+    }
+
     public static void start(String[] args) {
         CommandLineParser cp = new CommandLineParser(args);
         try {
@@ -41,21 +57,9 @@ public class DedicatedServer {
 
             // kick off a RNG check
             megamek.common.Compute.d6();
-            // start server
-            Server dedicated;
-            try {
-                if (password == null || password.length() == 0) {
-                    password = PreferenceManager.getClientPreferences().getLastServerPass();
-                }
-                dedicated = new Server(password, usePort, !announceUrl.equals(""), announceUrl);
-            } catch (IOException ex) {
-                MegaMek.getLogger().error("Error: could not start server at localhost" + ":" + usePort + " ("
-                        + ex.getMessage() + ").");
-                return;
-            }
-            if (null != saveGameFileName) {
-                dedicated.loadGame(new File(saveGameFileName));
-            }
+
+            startServer(saveGameFileName, usePort, announceUrl, password);
+
         } catch (AbstractCommandLineParser.ParseException e) {
             MegaMek.getLogger().error(INCORRECT_ARGUMENTS_MESSAGE + e.getMessage() + '\n'
                             + ARGUMENTS_DESCRIPTION_MESSAGE);
