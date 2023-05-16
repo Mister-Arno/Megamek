@@ -111,7 +111,7 @@ public interface IPlayer extends ITurnOrdered {
     // This simply returns the value, without checking the observer flag
     boolean getSeeAll();
 
-    // If observer is false, see_entire_board does nothing
+    // If observer is false, seeEntireBoard does nothing
     boolean canSeeAll();
 
     void setObserver(boolean observer);
