@@ -16,6 +16,7 @@ package megamek.server.victory;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 import megamek.common.IPlayer;
@@ -96,16 +97,15 @@ public class VictoryResult implements IResult {
     }
 
     protected void updateHiScore() {
-        // used to calculate winner
-        hiScore = Double.MIN_VALUE;
-        for (Double d : playerScore.values()) {
-            if (d > hiScore)
-                hiScore = d;
-        }
-        for (Double d : teamScore.values()) {
-            if (d > hiScore)
-                hiScore = d;
-        }
+        hiScore = calculateMaxScore(playerScore.values());
+        hiScore = Math.max(hiScore, calculateMaxScore(teamScore.values()));
+    }
+
+    private double calculateMaxScore(Collection<Double> scores) {
+        return scores.stream()
+                .mapToDouble(Double::doubleValue)
+                .max()
+                .orElse(Double.MIN_VALUE);
     }
 
     public void addPlayerScore(int id, double score) {
