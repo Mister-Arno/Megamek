@@ -64,49 +64,66 @@ public class Victory implements Serializable {
         return victories.toArray(new IVictoryConditions[0]);
     }
 
-    public VictoryResult checkForVictory(IGame game, Map<String, Object> context) {
-        VictoryResult reVal;
+    public VictoryResult checkForVictory(IGame currentGame, Map<String, Object> gameContext) {
+        VictoryResult victoryResult;
 
-        // Check for ForceVictory
-        // Always check for forced victory, so games without victory conditions
-        // can be completed
-        reVal = force.victory(game, context);
-        if (reVal.victory()) {
-            return reVal;
+        // Check for forced victory condition
+        victoryResult = force.victory(currentGame, gameContext);
+        if (victoryResult.victory()) {
+            return victoryResult;
         }
 
-        // Check optional Victory conditions
-        // These can have reports
+        // Check for optional victory conditions
         if (checkForVictory) {
             if (VCs == null) {
-                VCs = buildVClist(game.getOptions());
+                VCs = buildVClist(currentGame.getOptions());
             }
-            reVal = checkOptionalVictory(game, context);
-            if (reVal.victory()) {
-                return reVal;
+            victoryResult = checkOptionalVictory(currentGame, gameContext);
+            if (victoryResult.victory()) {
+                return victoryResult;
             }
+        } else {
+            return victoryResult;
         }
 
-        // Check for LastManStandingVictory
-        VictoryResult lastManResult = lastMan.victory(game, context);
-        if (checkForVictory && !reVal.victory() && lastManResult.victory()) {
+        // Check for last man standing victory condition
+        VictoryResult lastManResult = lastMan.victory(currentGame, gameContext);
+        if (!victoryResult.victory() && lastManResult.victory()) {
             return lastManResult;
+        } else {
+            return victoryResult;
         }
-        return reVal;
     }
 
+
     private VictoryResult checkOptionalVictory(IGame game, Map<String, Object> context) {
-        boolean victory = false;
         VictoryResult vr = new VictoryResult(true);
 
-        // combine scores
+        combineScores(vr, game, context);
+        double highScore = calculateHighScoresAndUpdate(vr);
+
+        boolean victory = vr.victory() && highScore >= neededVictoryConditions;
+        vr.setVictory(victory);
+
+        if (vr.victory()) {
+            return vr;
+        }
+
+        if (game.gameTimerIsExpired()) {
+            return VictoryResult.drawResult();
+        }
+
+        return vr;
+    }
+
+    private void combineScores(VictoryResult vr, IGame game, Map<String, Object> context) {
         for (IVictoryConditions v : VCs) {
             VictoryResult res = v.victory(game, context);
             for (Report r : res.getReports()) {
                 vr.addReport(r);
             }
             if (res.victory()) {
-                victory = true;
+                vr.setVictory(true);
             }
             for (int pl : res.getPlayers()) {
                 vr.addPlayerScore(pl, vr.getPlayerScore(pl) + res.getPlayerScore(pl));
@@ -115,36 +132,21 @@ public class Victory implements Serializable {
                 vr.addTeamScore(t, vr.getTeamScore(t) + res.getTeamScore(t));
             }
         }
-        // find highscore for thresholding, also divide the score
-        // to an average
+    }
+
+    private double calculateHighScoresAndUpdate(VictoryResult vr) {
         double highScore = 0.0;
         for (int pl : vr.getPlayers()) {
             double sc = vr.getPlayerScore(pl);
             vr.addPlayerScore(pl, sc / VCs.length);
-            if (sc > highScore) {
-                highScore = sc;
-            }
+            highScore = Math.max(highScore, sc);
         }
-        for (int pl : vr.getTeams()) {
-            double sc = vr.getTeamScore(pl);
-            vr.addTeamScore(pl, sc / VCs.length);
-            if (sc > highScore) {
-                highScore = sc;
-            }
+        for (int t : vr.getTeams()) {
+            double sc = vr.getTeamScore(t);
+            vr.addTeamScore(t, sc / VCs.length);
+            highScore = Math.max(highScore, sc);
         }
-        if (highScore < neededVictoryConditions) {
-            victory = false;
-        }
-        vr.setVictory(victory);
-
-        if (vr.victory()) {
-            return vr;
-        }
-
-        if (!vr.victory() && game.gameTimerIsExpired()) {
-            return VictoryResult.drawResult();
-        }
-
-        return vr;
+        return highScore;
     }
+
 }
