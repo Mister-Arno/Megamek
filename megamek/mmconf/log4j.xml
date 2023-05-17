@@ -15,6 +15,13 @@
         </layout>
     </appender>
 
+    <!-- log to console -->
+    <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%n%d{HH:mm:ss,SSS} %p [%c] {%t} %m%n"/>
+        </layout>
+    </appender>
+
     <!-- Set up a separate appender for Princess to log to a separate file. -->
     <!--<appender name="princess" class="org.apache.log4j.RollingFileAppender">-->
     <!--<param name="file" value="logs/princess.log"/>-->
@@ -39,6 +46,7 @@
     <root>
         <level value="INFO"/>
         <appender-ref ref="FILE"/>
+        <appender-ref ref="CONSOLE"/>
     </root>
 
     <!-- Set the QuirksHandler class to WARN. -->
@@ -62,4 +70,4 @@
     <!--<level value="DEBUG"/>-->
     <!--<appender-ref ref="forcegen"/>-->
     <!--</logger>-->
-</log4j:configuration> 
+</log4j:configuration>
