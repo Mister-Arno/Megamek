@@ -26,53 +26,53 @@ import megamek.common.IPlayer;
 public class ForceVictory implements IVictoryConditions, Serializable {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1782762191476942976L;
 
     public ForceVictory() {
     }
 
-    public VictoryResult victory(IGame game, Map<String, Object> ctx) {
+
+    public VictoryResult victory(IGame game, Map<String, Object> context) {
         if (!game.isForceVictory()) {
             return VictoryResult.noResult();
         }
         int victoryPlayerId = game.getVictoryPlayerId();
         int victoryTeam = game.getVictoryTeam();
         List<IPlayer> players = game.getPlayersVector();
-        boolean forceVictory = true;
 
-        // Individual victory.
-        if (victoryPlayerId != IPlayer.PLAYER_NONE) {
-            for (int i = 0; i < players.size(); i++) {
-                IPlayer player = players.get(i);
-
-                if (player.getId() != victoryPlayerId && !player.isObserver()) {
-                    if (!player.admitsDefeat()) {
-                        forceVictory = false;
-                        break;
-                    }
-                }
-            }
-        }
-        // Team victory.
-        if (victoryTeam != IPlayer.TEAM_NONE) {
-            for (int i = 0; i < players.size(); i++) {
-                IPlayer player = players.get(i);
-
-                if (player.getTeam() != victoryTeam && !player.isObserver()) {
-                    if (!player.admitsDefeat()) {
-                        forceVictory = false;
-                        break;
-                    }
-                }
-            }
+        if (victoryPlayerId != IPlayer.PLAYER_NONE && checkIndividualVictory(players, victoryPlayerId)) {
+            return new VictoryResult(true, victoryPlayerId, victoryTeam);
         }
 
-        if (forceVictory) {
+        if (victoryTeam != IPlayer.TEAM_NONE && checkTeamVictory(players, victoryTeam)) {
             return new VictoryResult(true, victoryPlayerId, victoryTeam);
         }
 
         return VictoryResult.noResult();
     }
+
+    private boolean checkIndividualVictory(List<IPlayer> players, int victoryPlayerId) {
+        for (IPlayer player : players) {
+            if (player.getId() != victoryPlayerId && !player.isObserver()) {
+                if (!player.admitsDefeat()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean checkTeamVictory(List<IPlayer> players, int victoryTeam) {
+        for (IPlayer player : players) {
+            if (player.getTeam() != victoryTeam && !player.isObserver()) {
+                if (!player.admitsDefeat()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
 }
