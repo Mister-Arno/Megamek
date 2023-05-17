@@ -207,7 +207,7 @@ public final class Player extends TurnOrdered implements IPlayer {
 
     public Player(int id, String name) {
         this.name = name;
-        this.id = id;
+        this.id = id; //cannot be changed later
     }
 
     @Override
@@ -263,6 +263,7 @@ public final class Player extends TurnOrdered implements IPlayer {
 
     @Override
     public boolean isObserver() {
+        // Can only be observer when the game is in the victory phase
         if ((game != null) && (game.getPhase() == IGame.Phase.PHASE_VICTORY)) {
             return false;
         }
@@ -293,6 +294,8 @@ public final class Player extends TurnOrdered implements IPlayer {
         if (!observer) {
             setSeeAll(false);
         }
+        // If the player is in a game and on a team
+        // Then calculate again the observer status of the team
         if (game != null && game.getTeamForPlayer(this) != null) {
             game.getTeamForPlayer(this).cacheObversverStatus();
         }
@@ -397,18 +400,21 @@ public final class Player extends TurnOrdered implements IPlayer {
 
     @Override
     public boolean hasTAG() {
-        for (Iterator<Entity> e = game
-                .getSelectedEntities(new EntitySelector() {
-                    private final int ownerId = getId();
+        //New selector with adapted accept method
+        EntitySelector selector = new EntitySelector() {
+            private final int ownerId = getId();
+            @Override
+            public boolean accept(Entity entity) {
+                if (entity.getOwner() == null) {
+                    return false;
+                }
+                return ownerId == entity.getOwner().getId();
+            }
+        };
 
-                    public boolean accept(Entity entity) {
-                        if (entity.getOwner() == null) {
-                            return false;
-                        }
-                        return ownerId == entity.getOwner().getId();
-                    }
-                }); e.hasNext(); ) {
-            Entity m = e.next();
+        Iterator<Entity> it = game.getSelectedEntities(selector);
+        while (it.hasNext()) {
+            Entity m = it.next();
             if (m.hasTAG()) {
                 return true;
             }
