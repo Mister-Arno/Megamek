@@ -39,6 +39,7 @@ import megamek.common.event.GamePhaseChangeEvent;
 import megamek.common.event.GamePlayerChangeEvent;
 import megamek.common.event.GamePlayerChatEvent;
 import megamek.common.event.GamePlayerConnectedEvent;
+import megamek.common.event.GamePlayerAddedEvent;
 import megamek.common.event.GamePlayerDisconnectedEvent;
 import megamek.common.event.GameReportEvent;
 import megamek.common.event.GameSettingsChangeEvent;
@@ -91,6 +92,9 @@ public class BotGUI implements GameListener {
     }
 
     public void gamePlayerConnected(GamePlayerConnectedEvent e) {
+    }
+
+    public void gamePlayerAdded(GamePlayerAddedEvent e) {
     }
 
     public void gamePlayerDisconnected(GamePlayerDisconnectedEvent e) {

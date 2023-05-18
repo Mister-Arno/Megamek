@@ -46,6 +46,7 @@ import megamek.common.event.GameEvent;
 import megamek.common.event.GameListener;
 import megamek.common.event.GameNewActionEvent;
 import megamek.common.event.GamePhaseChangeEvent;
+import megamek.common.event.GamePlayerAddedEvent;
 import megamek.common.event.GamePlayerChangeEvent;
 import megamek.common.event.GameSettingsChangeEvent;
 import megamek.common.event.GameTurnChangeEvent;
@@ -481,6 +482,7 @@ public class Game implements Serializable, IGame {
         playerIds.put(Integer.valueOf(id), player);
         setupTeams();
         updatePlayer(player);
+        processGameEvent(new GamePlayerAddedEvent(this, player));
     }
 
     public void setPlayer(int id, IPlayer player) {

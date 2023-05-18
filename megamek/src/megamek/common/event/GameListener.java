@@ -30,6 +30,8 @@ package megamek.common.event;
 public interface GameListener extends java.util.EventListener {
     void gamePlayerConnected(GamePlayerConnectedEvent e);
 
+    void gamePlayerAdded(GamePlayerAddedEvent e);
+
     void gamePlayerDisconnected(GamePlayerDisconnectedEvent e);
 
     void gamePlayerChange(GamePlayerChangeEvent e);

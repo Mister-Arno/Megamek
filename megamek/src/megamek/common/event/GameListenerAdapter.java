@@ -30,6 +30,9 @@ public class GameListenerAdapter implements GameListener {
     public void gamePlayerConnected(GamePlayerConnectedEvent e) {
     }
 
+    public void gamePlayerAdded(GamePlayerAddedEvent e) {
+    }
+
     public void gamePlayerDisconnected(GamePlayerDisconnectedEvent e) {
     }
 
