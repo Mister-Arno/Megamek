@@ -17,9 +17,10 @@
  * along with MegaMek. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package megamek.common.event;
+package megamek.common;
 
 import megamek.MegaMek;
+import megamek.common.event.*;
 
 /**
  * This listener uses the <code>GameListener</code> interface to
@@ -34,6 +35,11 @@ import megamek.MegaMek;
 public class RatingListener extends GameListenerAdapter {
     public RatingListener() {
         MegaMek.getLogger().info("Rating Listener connected.");
+    }
+
+    public void gamePlayerAdded(GamePlayerAddedEvent e) {
+        // TODO: Handle newly added / set players
+        MegaMek.getLogger().info(e.getPlayer().getName() + " has been added to the game.");
     }
 
     @Override
