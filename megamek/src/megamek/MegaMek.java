@@ -77,9 +77,24 @@ public class MegaMek {
     public static final String DEFAULT_LOG_FILE_NAME = "megameklog.txt";
 
     public static void main(String[] args) {
-        String logFileName = DEFAULT_LOG_FILE_NAME;
         CommandLineParser cp = new CommandLineParser(args);
+        String logFileName = determineLogFileName(cp);
+        configureLogging(logFileName);
 
+        MegaMek.showInfo();
+
+        String[] restArgs = cp.getRestArgs();
+        if (cp.dedicatedServer()) {
+            MegaMek.startDedicatedServer(restArgs);
+        } else if (cp.ratGenEditor()) {
+            RATGeneratorEditor.main(restArgs);
+        } else {
+            startGUI(cp, restArgs);
+        }
+    }
+
+    private static String determineLogFileName(CommandLineParser cp) {
+        String logFileName = DEFAULT_LOG_FILE_NAME;
         try {
             cp.parse();
             String lf = cp.getLogFilename();
@@ -90,33 +105,26 @@ public class MegaMek {
                     logFileName = lf;
                 }
             }
-
-            configureLogging(logFileName);
-
-            MegaMek.showInfo();
-
-            String[] restArgs = cp.getRestArgs();
-            if (cp.dedicatedServer()) {
-                MegaMek.startDedicatedServer(restArgs);
-            } else if (cp.ratGenEditor()) {
-                RATGeneratorEditor.main(restArgs);
-            } else {
-                // Load button ordering
-                ButtonOrderPreferences.getInstance().setButtonPriorities();
-
-                String interfaceName = cp.getGuiName();
-                if (interfaceName == null) {
-                    interfaceName = PreferenceManager.getClientPreferences().getGUIName();
-                }
-                MegaMek.startGUI(interfaceName, restArgs);
-            }
         } catch (CommandLineParser.ParseException e) {
             String message = INCORRECT_ARGUMENTS_MESSAGE + e.getMessage() + '\n'
                     + ARGUMENTS_DESCRIPTION_MESSAGE;
             getLogger().fatal(message);
             System.exit(1);
         }
+        return logFileName;
     }
+
+    private static void startGUI(CommandLineParser cp, String[] restArgs) {
+        // Load button ordering
+        ButtonOrderPreferences.getInstance().setButtonPriorities();
+
+        String interfaceName = cp.getGuiName();
+        if (interfaceName == null) {
+            interfaceName = PreferenceManager.getClientPreferences().getGUIName();
+        }
+        MegaMek.startGUI(interfaceName, restArgs);
+    }
+
 
     private static void configureLegacyLogging(@Nullable final String logFileName) {
         // Redirect output to log files, unless turned off.
