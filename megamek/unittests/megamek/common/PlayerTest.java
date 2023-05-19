@@ -1,4 +1,7 @@
 package megamek.common;
+import java.util.Enumeration;
+import java.util.List;
+import megamek.common.weapons.LegAttack;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -340,6 +343,156 @@ public class PlayerTest {
         assertEquals(player, player3); // !!! assuming same id means same player !!!
         assertEquals(player.hashCode(), player3.hashCode()); // assuming equality implies same hashcode
     }
+    public Vector<Entity> addEntitiesForTest(){
+        Vector<Entity> entities = new Vector<>();
+        entities.add(new Aero());
+        entities.add(new ConvFighter());
+        entities.add(new FixedWingSupport());
+        entities.add(new FighterSquadron());
+        entities.add(new Jumpship());
+        entities.add(new Warship());
+        entities.add(new SpaceStation());
+        entities.add(new SmallCraft());
+        entities.add(new EscapePods());
+        entities.add(new Dropship());
+        entities.add(new TeleMissile());
+        entities.add(new GunEmplacement());
+        entities.add(new Infantry());
+        entities.add(new BattleArmor());
+        entities.add(new BipedMech());
+        entities.add(new ArmlessMech());
+        entities.add(new QuadMech());
+        entities.add(new QuadVee());
+        entities.add(new TripodMech());
+        entities.add(new MechWarrior());
+        entities.add(new Protomech());
+        entities.add(new Tank());
+        entities.add(new SuperHeavyTank());
+        entities.add(new GunEmplacement());
+        entities.add(new SupportTank());
+        entities.add(new LargeSupportTank());
+        entities.add(new TeleMissile());
+        return entities;
+    }
+
+    @Test
+    public void testBattleValue(){
+        Vector<Entity> playerEntities = addEntitiesForTest();
+        Vector<Entity> player2Entities = addEntitiesForTest();
+
+        Game g = new Game();
+        player.setGame(g);
+        g.addPlayer(player.getId(), player);
+
+
+
+        // add all entities to the game
+        // and calculate the upsum of their battle values
+        float upsum = 0;
+        for (Entity e : playerEntities) {
+            upsum += e.calculateBattleValue();
+            e.setOwner(player);
+            g.addEntity(e);
+
+        }
+
+        // Entities get captured
+        for (Entity e : playerEntities) {
+            e.setRemovalCondition(IEntityRemovalConditions.REMOVE_CAPTURED);
+        }
+        // Check battle value of removed entities
+        g.setOutOfGameEntitiesVector(playerEntities);
+        assertEquals((int) upsum, player.getFledBV());
+
+        // Entities of another player do not influence the BV
+        Player player2 = new Player(17, "testplayer2");
+        for (Entity e : player2Entities) {
+            e.setOwner(player2);
+            g.addEntity(e);
+            assertEquals((int) upsum, player.getBV()); // upsum not influenced
+        }
+
+
+        // Check initial BV
+        int original_BV = player.getInitialBV();
+        player.increaseInitialBV(28);
+        assertEquals(original_BV + 28, player.getInitialBV());
+
+        player.setInitialBV();
+        assertEquals((int) upsum, player.getInitialBV());
+        player.increaseInitialBV(68);
+        assertEquals((int) upsum + 68, player.getInitialBV());
+    }
+
+    @Test
+    public void testBonuses(){
+        // Entities and thus a game are needed to have a bonus
+        assertEquals(0, player.getTurnInitBonus());
+        Game g = new Game();
+        player.setGame(g);
+        g.addPlayer(player.getId(), player);
+        assertEquals(0, player.getTurnInitBonus());
+
+
+        // Add entities to the game
+        Vector<Entity> entities = addEntitiesForTest();
+
+        // Calculate the upsum of their battle values
+        float upsumInitBonus = 0;
+        float upsumCommandBonus = 0;
+        for (Entity e : entities) {
+            upsumInitBonus += e.getQuirkIniBonus();
+            upsumCommandBonus += e.getCrew().getCommandBonus();
+            e.setOwner(player);
+            g.addEntity(e);
+        }
+        assertEquals((int) upsumInitBonus, player.getTurnInitBonus());
+        assertEquals((int) upsumCommandBonus, player.getCommandBonus());
+    }
+
+    @Test
+    public void testAirborne(){
+        // QUESTION
+        // Should this crash when game is null?
+        // assertEquals(new Vector<Integer>(), player.getAirborneVTOL());
+
+        Game g = new Game();
+        player.setGame(g);
+        g.addPlayer(player.getId(), player);
+        Vector<Entity> entities = addEntitiesForTest();
+        for (Entity e : entities) {
+            e.setOwner(player);
+            g.addEntity(e);
+        }
+        assertEquals(0, player.getAirborneVTOL().size()); // there are no airborne VTOLs
+
+        // Add VTOL
+        VTOL v1 = new VTOL();
+        v1.setOwner(player);
+        g.addEntity(v1);;
+        assertEquals(0, player.getAirborneVTOL().size()); // not airborne yet
+
+        v1.setElevation(248);
+        assertEquals(1, player.getAirborneVTOL().size()); // airborne now
+
+        // Add another VTOL
+        VTOL v2 = new VTOL();
+        v2.setOwner(player);
+        g.addEntity(v2);
+        assertEquals(1, player.getAirborneVTOL().size()); // only one airborne
+        v2.setElevation(222);
+        assertEquals(2, player.getAirborneVTOL().size()); // two airborne
+    }
+
+
+
+
+
+
+
+
+
+
 
 
 
