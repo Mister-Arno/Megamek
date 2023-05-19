@@ -18,6 +18,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 import megamek.common.IPlayer;
 import megamek.common.Report;
@@ -63,7 +64,7 @@ public class VictoryResult implements IResult {
         int maxPlayer = IPlayer.PLAYER_NONE;
         boolean draw = false;
 
-        for(HashMap.Entry<Integer, Double> entry : playerScore.entrySet()) {
+        for(Map.Entry<Integer, Double> entry : playerScore.entrySet()) {
             if (entry.getValue() == max) {
                 draw = true;
             }
@@ -84,7 +85,7 @@ public class VictoryResult implements IResult {
         boolean draw = false;
 
         //improved for loop
-        for(HashMap.Entry<Integer, Double> entry : teamScore.entrySet()) {
+        for(Map.Entry<Integer, Double> entry : teamScore.entrySet()) {
             if (entry.getValue() == max) {
                 draw = true;
             }
