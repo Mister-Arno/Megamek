@@ -89,7 +89,7 @@ public class MegaMek {
         } else if (cp.ratGenEditor()) {
             RATGeneratorEditor.main(restArgs);
         } else {
-            startGUI(cp, restArgs);
+            openGUI(cp, restArgs);
         }
     }
 
@@ -114,7 +114,7 @@ public class MegaMek {
         return logFileName;
     }
 
-    private static void startGUI(CommandLineParser cp, String[] restArgs) {
+    private static void openGUI(CommandLineParser cp, String[] restArgs) {
         // Load button ordering
         ButtonOrderPreferences.getInstance().setButtonPriorities();
 
