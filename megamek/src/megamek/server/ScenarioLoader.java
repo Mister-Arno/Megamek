@@ -368,7 +368,7 @@ public class ScenarioLoader {
         Game g = new Game();
 
         // build the board
-        g.board = createBoard(p);
+        g.setBoard(createBoard(p));
 
         // build the faction players
         Collection<Player> players = createPlayers(p);

@@ -70,12 +70,12 @@ public class Game implements Serializable, IGame {
     /**
      * A UUID to identify this game instance.
      */
-    public UUID uuid = UUID.randomUUID();
+    private UUID uuid = UUID.randomUUID();
 
     /**
      * Stores the version of MM, so that it can be serialized in saved games.
      */
-    public String mmVersion = MegaMek.VERSION;
+    private String mmVersion = MegaMek.VERSION;
 
     /**
      * Define constants to describe the condition a unit was in when it wass
@@ -84,7 +84,7 @@ public class Game implements Serializable, IGame {
 
     private GameOptions options = new GameOptions();
 
-    public IBoard board = new Board();
+    private IBoard board = new Board();
 
     private final List<Entity> entities = new CopyOnWriteArrayList<>();
     private Hashtable<Integer, Entity> entityIds = new Hashtable<Integer, Entity>();
