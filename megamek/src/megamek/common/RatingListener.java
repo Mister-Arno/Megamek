@@ -33,7 +33,7 @@ import megamek.common.event.*;
  * @see GameEvent
  */
 public class RatingListener extends GameListenerAdapter {
-    private RatingHandler handler;
+    private final RatingHandler handler;
 
     public RatingListener(RatingHandler handler) {
         this.handler = handler;
@@ -47,7 +47,11 @@ public class RatingListener extends GameListenerAdapter {
     }
 
     @Override
-    public void gameEnd(GameEndEvent e) {
-        // TODO: Call ranking update
+    public void gameVictory(GameVictoryEvent e) {
+        MegaMek.getLogger().info("Victory event triggered, updating ratings...");
+        handler.updateRatings();
+        MegaMek.getLogger().info("Ratings updated");
     }
+
+
 }
