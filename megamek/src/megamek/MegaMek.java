@@ -63,8 +63,8 @@ import megamek.utils.RATGeneratorEditor;
 public class MegaMek {
     private static MMLogger logger = null;
 
-    public static String VERSION = "0.48.0";
-    public static long TIMESTAMP = new File(PreferenceManager.getClientPreferences().getLogDirectory()
+    public static final String VERSION = "0.48.0";
+    public static final long TIMESTAMP = new File(PreferenceManager.getClientPreferences().getLogDirectory()
             + File.separator + "timestamp").lastModified();
 
     private static final NumberFormat commafy = NumberFormat.getInstance();
@@ -259,12 +259,11 @@ public class MegaMek {
         getLogger().info("Redirecting output to " + logFileName);
         String sLogDir = PreferenceManager.getClientPreferences().getLogDirectory();
         File logDir = new File(sLogDir);
-        if (!logDir.exists()) {
-            if (!logDir.mkdir()) {
-                getLogger().error("Error in creating directory ./logs. We know this is annoying, and apologise. "
+
+        if(!logDir.exists() && !logDir.mkdir()){
+            getLogger().error("Error in creating directory ./logs. We know this is annoying, and apologise. "
                                 + "Please submit a bug report at https://github.com/MegaMek/megamek/issues "
                                 + " and we will try to resolve your issue.");
-            }
         }
         try {
             PrintStream ps = new PrintStream(
@@ -677,13 +676,12 @@ public class MegaMek {
                 filename = getTokenValue();
                 nextToken();
 
-                if (!new File("./docs").exists()) {
-                    if (!new File("./docs").mkdir()) {
-                        getLogger().error(
-                                "Error in creating directory ./docs. We know this is annoying, and apologise. "
-                                        + "Please submit a bug report at https://github.com/MegaMek/megamek/issues "
-                                        + " and we will try to resolve your issue.");
-                    }
+                if (!new File("./docs").exists() && !new File("./docs").mkdir()) {
+                    getLogger().error(
+                            "Error in creating directory ./docs. We know this is annoying, and apologise. "
+                                    + "Please submit a bug report at https://github.com/MegaMek/megamek/issues "
+                                    + " and we will try to resolve your issue.");
+
                 }
                 File file = new File("./docs/" + filename);
                 try (Writer w = new FileWriter(file); BufferedWriter fw = new BufferedWriter(w)) {
@@ -763,13 +761,12 @@ public class MegaMek {
                 }
                 nextToken();
 
-                if (!new File("./docs").exists()) {
-                    if (!new File("./docs").mkdir()) {
-                        getLogger().error(
-                                "Error in creating directory ./docs. We know this is annoying, and apologise. "
-                                        + "Please submit a bug report at https://github.com/MegaMek/megamek/issues "
-                                        + " and we will try to resolve your issue.");
-                    }
+                if (!new File("./docs").exists() && !new File("./docs").mkdir()) {
+                    getLogger().error(
+                            "Error in creating directory ./docs. We know this is annoying, and apologise. "
+                                    + "Please submit a bug report at https://github.com/MegaMek/megamek/issues "
+                                    + " and we will try to resolve your issue.");
+
                 }
                 File file = new File("./docs/" + filename);
                 try (Writer w = new FileWriter(file); BufferedWriter bw = new BufferedWriter(w)) {
