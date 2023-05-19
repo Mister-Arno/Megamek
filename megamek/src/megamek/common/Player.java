@@ -263,7 +263,7 @@ public final class Player extends TurnOrdered implements IPlayer {
 
     @Override
     public boolean isObserver() {
-        // Can only be observer when the game is in the victory phase
+        // Cannot be observer when the game is in the victory phase (when game is resetting)
         if ((game != null) && (game.getPhase() == IGame.Phase.PHASE_VICTORY)) {
             return false;
         }
