@@ -587,74 +587,89 @@ public class MegaMek {
         }
 
         private void processUnitValidator() throws ParseException {
-            String filename;
-            if (getToken() == TOK_LITERAL) {
-                filename = getTokenValue();
-                nextToken();
-                MechSummary ms = MechSummaryCache.getInstance().getMech(filename);
-                if (ms == null) {
-                    MechSummary[] units = MechSummaryCache.getInstance().getAllMechs();
-                    for (MechSummary unit : units) {
-                        if (unit.getSourceFile().getName().equalsIgnoreCase(filename)) {
-                            ms = unit;
-                            break;
-                        }
-                    }
-                }
-
-                if (ms == null) {
-                    getLogger().error(new IOException(filename + " not found.  Try using \"chassis model\" for input."));
-                } else {
-                    try {
-                        Entity entity = new MechFileParser(ms.getSourceFile(),
-                                ms.getEntryName()).getEntity();
-                        getLogger().info("Validating Entity: " + entity.getShortNameRaw());
-                        EntityVerifier entityVerifier = EntityVerifier.getInstance(
-                                new MegaMekFile(Configuration.unitsDir(),
-                                        EntityVerifier.CONFIG_FILENAME).getFile());
-                        MechView mechView = new MechView(entity, false);
-                        StringBuffer sb = new StringBuffer(mechView.getMechReadout());
-                        if ((entity instanceof Mech) || (entity instanceof Tank)
-                                || (entity instanceof Aero) || (entity instanceof BattleArmor)) {
-                            TestEntity testEntity = null;
-                            if (entity instanceof Mech) {
-                                testEntity = new TestMech((Mech) entity, entityVerifier.mechOption,
-                                        null);
-                            } else if ((entity instanceof Tank) && !(entity instanceof GunEmplacement)) {
-                                if (entity.isSupportVehicle()) {
-                                    testEntity = new TestSupportVehicle(entity,
-                                            entityVerifier.tankOption, null);
-                                } else {
-                                    testEntity = new TestTank((Tank) entity,
-                                            entityVerifier.tankOption, null);
-                                }
-                            } else if ((entity.getEntityType() == Entity.ETYPE_AERO)
-                                    && (entity.getEntityType() != Entity.ETYPE_DROPSHIP)
-                                    && (entity.getEntityType() != Entity.ETYPE_SMALL_CRAFT)
-                                    && (entity.getEntityType() != Entity.ETYPE_FIGHTER_SQUADRON)
-                                    && (entity.getEntityType() != Entity.ETYPE_JUMPSHIP)
-                                    && (entity.getEntityType() != Entity.ETYPE_SPACE_STATION)) {
-                                testEntity = new TestAero((Aero) entity,
-                                        entityVerifier.aeroOption, null);
-                            } else if (entity instanceof BattleArmor){
-                                testEntity = new TestBattleArmor((BattleArmor) entity,
-                                        entityVerifier.baOption, null);
-                            }
-
-                            if (testEntity != null) {
-                                testEntity.correctEntity(sb);
-                            }
-                        }
-                        getLogger().info(sb.toString());
-                    } catch (Exception ex) {
-                        throw new ParseException("\"chassis model\" expected as input");
-                    }
-                }
-            } else {
+            if (getToken() != TOK_LITERAL) {
                 throw new ParseException("\"chassis model\" expected as input");
             }
+
+            String filename = getTokenValue();
+            nextToken();
+            MechSummary ms = findMechSummary(filename);
+
+            if (ms == null) {
+                getLogger().error(new IOException(filename + " not found.  Try using \"chassis model\" for input."));
+            } else {
+                validateAndLogMechSummary(ms);
+            }
+
             System.exit(0);
         }
+
+        private MechSummary findMechSummary(String filename) {
+            MechSummary ms = MechSummaryCache.getInstance().getMech(filename);
+
+            if (ms == null) {
+                MechSummary[] units = MechSummaryCache.getInstance().getAllMechs();
+                for (MechSummary unit : units) {
+                    if (unit.getSourceFile().getName().equalsIgnoreCase(filename)) {
+                        ms = unit;
+                        break;
+                    }
+                }
+            }
+
+            return ms;
+        }
+
+        private void validateAndLogMechSummary(MechSummary ms) throws ParseException {
+            try {
+                Entity entity = new MechFileParser(ms.getSourceFile(),
+                        ms.getEntryName()).getEntity();
+                getLogger().info("Validating Entity: " + entity.getShortNameRaw());
+                EntityVerifier entityVerifier = EntityVerifier.getInstance(
+                        new MegaMekFile(Configuration.unitsDir(),
+                                EntityVerifier.CONFIG_FILENAME).getFile());
+                MechView mechView = new MechView(entity, false);
+                StringBuffer sb = new StringBuffer(mechView.getMechReadout());
+
+                TestEntity testEntity = createTestEntity(entity, entityVerifier);
+                if (testEntity != null) {
+                    testEntity.correctEntity(sb);
+                }
+
+                getLogger().info(sb.toString());
+            } catch (Exception ex) {
+                throw new ParseException("\"chassis model\" expected as input");
+            }
+        }
+
+        private TestEntity createTestEntity(Entity entity, EntityVerifier entityVerifier) {
+            TestEntity testEntity = null;
+            if (entity instanceof Mech) {
+                testEntity = new TestMech((Mech) entity, entityVerifier.mechOption, null);
+            } else if ((entity instanceof Tank) && !(entity instanceof GunEmplacement)) {
+                if (entity.isSupportVehicle()) {
+                    testEntity = new TestSupportVehicle(entity, entityVerifier.tankOption, null);
+                } else {
+                    testEntity = new TestTank((Tank) entity, entityVerifier.tankOption, null);
+                }
+            } else if (isAeroEntityType(entity)) {
+                testEntity = new TestAero((Aero) entity, entityVerifier.aeroOption, null);
+            } else if (entity instanceof BattleArmor) {
+                testEntity = new TestBattleArmor((BattleArmor) entity, entityVerifier.baOption, null);
+            }
+
+            return testEntity;
+        }
+
+        private boolean isAeroEntityType(Entity entity) {
+            return (entity.getEntityType() == Entity.ETYPE_AERO)
+                    && (entity.getEntityType() != Entity.ETYPE_DROPSHIP)
+                    && (entity.getEntityType() != Entity.ETYPE_SMALL_CRAFT)
+                    && (entity.getEntityType() != Entity.ETYPE_FIGHTER_SQUADRON)
+                    && (entity.getEntityType() != Entity.ETYPE_JUMPSHIP)
+                    && (entity.getEntityType() != Entity.ETYPE_SPACE_STATION);
+        }
+
 
         private void processUnitBattleForceConverter() {
             String filename;
