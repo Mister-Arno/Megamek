@@ -1927,10 +1927,6 @@ public class ClientGUI extends JPanel implements WindowListener, BoardViewListen
         public void gameEnd(GameEndEvent e) {
             bv.clearMovementData();
             bv.clearFieldofF();
-            for (Client client2 : getBots().values()) {
-                client2.die();
-            }
-            getBots().clear();
 
             // Make a list of the player's living units.
             ArrayList<Entity> living = getClient().getGame().getPlayerEntities(getClient().getLocalPlayer(), false);
