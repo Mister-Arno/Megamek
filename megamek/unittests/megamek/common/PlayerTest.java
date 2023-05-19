@@ -13,12 +13,16 @@ public class PlayerTest {
 
     @Before
     public void setup() {
-        player = new Player(1, "TestPlayer");
+        player = new Player(16, "TestPlayer");
 
     }
 
     @Test
     public void testConstructor(){
+        // QUESTION
+        // Should it be possible to create a player with an empty name / null name / non-unique ID?
+        // Who / when / where should this raise an error?
+
         Player p = new Player(34, "TestPlayer");
         assertEquals(34, p.getId());
     }
@@ -210,10 +214,131 @@ public class PlayerTest {
 
     @Test
     public void testObserver(){
+        // QUESTION
+        // When does being observer (not) imply seeEntireBoard and vice versa?
+
+        // player with no team
+        assertFalse(player.isObserver());
+        assertFalse(player.canSeeAll());
         player.setObserver(true);
-        assertTrue(player.canSeeAll());
+        assertTrue(player.isObserver());
+        player.setObserver(false);
+        assertFalse(player.isObserver());
+
+        // player with team
+        Game g = new Game();
+        Player player2 = new Player(17, "testplayer2");
+        Player player3 = new Player(18, "testplayer3");
+
+        player.setGame(g);
+        player2.setGame(g);
+        player3.setGame(g);
+
+        g.addPlayer(player.getId(), player);
+        g.addPlayer(player2.getId(), player2);
+        g.addPlayer(player3.getId(), player3);
+
+        player.setTeam(3);
+        player2.setTeam(3);
+        player3.setTeam(4);
+
+        g.setupTeams();
+        assertFalse(g.getTeamForPlayer(player).isObserverTeam());
+        assertFalse(g.getTeamForPlayer(player2).isObserverTeam());
+        assertFalse(g.getTeamForPlayer(player3).isObserverTeam());
+
+        // Everyone in team of player3 is an observer
+        // The other team is not observer teams
+        player3.setObserver(true);
+        assertTrue(g.getTeamForPlayer(player3).isObserverTeam());
+        assertFalse(g.getTeamForPlayer(player).isObserverTeam());
+        assertFalse(g.getTeamForPlayer(player2).isObserverTeam());
+
+        // Only a part of the team of player is observer
+        // Therefore the team is not an observer team
+        player.setObserver(true);
+        assertFalse(g.getTeamForPlayer(player).isObserverTeam());
+        assertFalse(g.getTeamForPlayer(player2).isObserverTeam());
+        assertTrue(g.getTeamForPlayer(player3).isObserverTeam());
+
+        // Everyone in the team of player is an observer
+        // Therefore the team is an observer team
+        player2.setObserver(true);
+        assertTrue(g.getTeamForPlayer(player).isObserverTeam());
+        assertTrue(g.getTeamForPlayer(player2).isObserverTeam());
+        assertTrue(g.getTeamForPlayer(player3).isObserverTeam());
+
+        // When someone of the team is not an observer (anymore)
+        // The team is not an observer team
+        player2.setObserver(false);
+        assertFalse(g.getTeamForPlayer(player).isObserverTeam());
+        assertFalse(g.getTeamForPlayer(player2).isObserverTeam());
+        assertTrue(g.getTeamForPlayer(player3).isObserverTeam());
+    }
+
+    @Test
+    public void testEnemies(){
+        // QUESTION
+        // What is the desired output when passing NULL to the isEnemyOf method?
+
+        Game g = new Game();
+        Player player2 = new Player(17, "testplayer2");
+        Player player3 = new Player(18, "testplayer3");
+
+        player.setGame(g);
+        player2.setGame(g);
+        player3.setGame(g);
+
+        g.addPlayer(player.getId(), player);
+        g.addPlayer(player2.getId(), player2);
+        g.addPlayer(player3.getId(), player3);
+
+        assertFalse(player.isEnemyOf(player)); // not an enemy of itself
+        assertTrue(player.isEnemyOf(player2)); // when at least one player is not in a team, they are enemies
+        assertTrue(player2.isEnemyOf(player));
+
+        player.setTeam(3);
+        g.setupTeams();
+
+        assertFalse(player.isEnemyOf(player)); // not an enemy of itself
+        assertTrue(player.isEnemyOf(player2)); // when at least one player is not in a team, they are enemies
+        assertTrue(player2.isEnemyOf(player));
+
+        player2.setTeam(4);
+        g.setupTeams();
+        assertFalse(player.isEnemyOf(player)); // not an enemy of itself
+        assertTrue(player.isEnemyOf(player2)); // different teams are enemies
+        assertTrue(player2.isEnemyOf(player));
+
+        player3.setTeam(3);
+        g.setupTeams();
+        assertFalse(player.isEnemyOf(player)); // not an enemy of itself
+        assertFalse(player.isEnemyOf(player3)); // same team is not an enemy
+        assertFalse(player3.isEnemyOf(player)); // same team is not an enemy
+        assertTrue(player.isEnemyOf(player2)); // different teams are enemies
+        assertTrue(player2.isEnemyOf(player));
 
 
+    }
+
+    @Test
+    public void testEqualsAndHashCode(){
+        //QUESTION
+        //see constructor: same IDs allowed? Are they equal?
+
+        Game g = new Game();
+        assertNotEquals(player, g); // different types are never equal
+        assertNotEquals(null, player); // null is never equal
+        assertEquals(player, player); // same object is equal
+
+        Player player2 = new Player(player.getId() +1, "testplayer2");
+        Player player3 = new Player(player.getId(), "testplayer3");
+
+        assertNotEquals(player, player2); // different id
+        assertNotEquals(player.hashCode(), player2.hashCode()); // assuming inequality implies different hashcode
+
+        assertEquals(player, player3); // !!! assuming same id means same player !!!
+        assertEquals(player.hashCode(), player3.hashCode()); // assuming equality implies same hashcode
     }
 
 
