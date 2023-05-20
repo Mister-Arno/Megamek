@@ -112,20 +112,20 @@ public class Client implements IClientCommandHandler {
     // random generatorsI
     private RandomSkillsGenerator rsg;
     // And close client events!
-    private Vector<CloseClientListener> closeClientListeners = new Vector<CloseClientListener>();
+    private Vector<CloseClientListener> closeClientListeners = new Vector<>();
 
     // we might want to keep a game log...
     private GameLog log;
 
-    private Set<BoardDimensions> availableSizes = new TreeSet<BoardDimensions>();
+    private Set<BoardDimensions> availableSizes = new TreeSet<>();
 
     private Vector<Coords> artilleryAutoHitHexes = null;
 
     private boolean disconnectFlag = false;
 
-    private Hashtable<String, Integer> duplicateNameHash = new Hashtable<String, Integer>();
+    private Hashtable<String, Integer> duplicateNameHash = new Hashtable<>();
 
-    public Map<String, Client> bots = new TreeMap<String, Client>(StringUtil.stringComparator());
+    public Map<String, Client> bots = new TreeMap<>(StringUtil.stringComparator());
 
     //Hashtable for storing image tags containing base64Text src
     private Hashtable<Integer, String> imgCache;
@@ -811,7 +811,7 @@ public class Client implements IClientCommandHandler {
      *            The Entity to add.
      */
     public void sendAddEntity(Entity entity) {
-        ArrayList<Entity> entities = new ArrayList<Entity>(1);
+        ArrayList<Entity> entities = new ArrayList<>(1);
         entities.add(entity);
         sendAddEntity(entities);
     }
@@ -879,7 +879,7 @@ public class Client implements IClientCommandHandler {
      * Sends a "delete entity" packet
      */
     public void sendDeleteEntity(int id) {
-        ArrayList<Integer> ids = new ArrayList<Integer>(1);
+        ArrayList<Integer> ids = new ArrayList<>(1);
         ids.add(id);
         sendDeleteEntities(ids);
     }
@@ -1047,7 +1047,7 @@ public class Client implements IClientCommandHandler {
     @SuppressWarnings("unchecked")
     protected void receiveUpdateMinefields(Packet packet) {
         // only update information if you know about the minefield
-        Vector<Minefield> newMines = new Vector<Minefield>();
+        Vector<Minefield> newMines = new Vector<>();
         for (Minefield mf : (Vector<Minefield>) packet.getObject(0)) {
             if (getLocalPlayer().containsMinefield(mf)) {
                 newMines.add(mf);
@@ -1122,7 +1122,7 @@ public class Client implements IClientCommandHandler {
             report.append(r.getText());
         }
 
-        Set<Integer> set = new HashSet<Integer>();
+        Set<Integer> set = new HashSet<>();
         //find id stored in spans and extract it
         Pattern p = Pattern.compile("<s(.*?)n>");
         Matcher m = p.matcher(report.toString());
@@ -1364,8 +1364,8 @@ public class Client implements IClientCommandHandler {
             game.getBoard().setHex((Coords) c.getObject(0), (IHex) c.getObject(1));
             break;
         case Packet.COMMAND_CHANGE_HEXES:
-            List<Coords> coords = new ArrayList<Coords>((Set<Coords>) c.getObject(0));
-            List<IHex> hexes = new ArrayList<IHex>((Set<IHex>) c.getObject(1));
+            List<Coords> coords = new ArrayList<>((Set<Coords>) c.getObject(0));
+            List<IHex> hexes = new ArrayList<>((Set<IHex>) c.getObject(1));
             game.getBoard().setHexes(coords, hexes);
             break;
         case Packet.COMMAND_BLDG_UPDATE:
@@ -1683,14 +1683,14 @@ public class Client implements IClientCommandHandler {
      */
     private void checkDuplicateNamesDuringDelete(List<Integer> ids) {
         ArrayList<Entity> myEntities = game.getPlayerEntities(game.getPlayer(localPlayerNumber), false);
-        Hashtable<String, ArrayList<Integer>> rawNameToId = new Hashtable<String, ArrayList<Integer>>(
+        Hashtable<String, ArrayList<Integer>> rawNameToId = new Hashtable<>(
                 (int) (myEntities.size() * 1.26));
 
         for (Entity e : myEntities) {
             String rawName = e.getShortNameRaw();
             ArrayList<Integer> namedIds = rawNameToId.get(rawName);
             if (namedIds == null) {
-                namedIds = new ArrayList<Integer>();
+                namedIds = new ArrayList<>();
             }
             namedIds.add(e.getId());
             rawNameToId.put(rawName, namedIds);
