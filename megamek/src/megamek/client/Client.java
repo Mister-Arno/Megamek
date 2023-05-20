@@ -125,7 +125,7 @@ public class Client implements IClientCommandHandler {
 
     private Hashtable<String, Integer> duplicateNameHash = new Hashtable<>();
 
-    public Map<String, Client> bots = new TreeMap<>(StringUtil.stringComparator());
+    private Map<String, Client> bots = new TreeMap<>(StringUtil.stringComparator());
 
     //Hashtable for storing image tags containing base64Text src
     private Hashtable<Integer, String> imgCache;
@@ -149,6 +149,14 @@ public class Client implements IClientCommandHandler {
 
     public void setRoundReport(String roundReport) {
         this.roundReport = roundReport;
+    }
+
+    public Map<String, Client> getBots() {
+        return bots;
+    }
+
+    public void setBots(Map<String, Client> bots) {
+        this.bots = bots;
     }
 
     private class ConnectionHandler implements Runnable {
@@ -1306,7 +1314,7 @@ public class Client implements IClientCommandHandler {
             receivePlayerInfo(c);
             break;
         case Packet.COMMAND_PLAYER_REMOVE:
-            for (Iterator<Client> botIterator = bots.values().iterator(); botIterator.hasNext();) {
+            for (Iterator<Client> botIterator = getBots().values().iterator(); botIterator.hasNext();) {
                 Client bot = botIterator.next();
                 if (bot.localPlayerNumber == c.getIntValue(0)) {
                     botIterator.remove();

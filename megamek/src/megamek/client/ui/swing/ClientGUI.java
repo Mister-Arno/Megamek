@@ -2246,7 +2246,7 @@ public class ClientGUI extends JPanel implements WindowListener, BoardViewListen
     }
 
     public Map<String, Client> getBots() {
-        return client.bots;
+        return client.getBots();
     }
 
     /**
