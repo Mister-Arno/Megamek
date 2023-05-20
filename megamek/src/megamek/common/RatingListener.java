@@ -33,17 +33,25 @@ import megamek.common.event.*;
  * @see GameEvent
  */
 public class RatingListener extends GameListenerAdapter {
-    public RatingListener() {
+    private final RatingHandler handler;
+
+    public RatingListener(RatingHandler handler) {
+        this.handler = handler;
         MegaMek.getLogger().info("Rating Listener connected.");
     }
 
     public void gamePlayerAdded(GamePlayerAddedEvent e) {
         // TODO: Handle newly added / set players
         MegaMek.getLogger().info(e.getPlayer().getName() + " has been added to the game.");
+        handler.addPlayer(e.getPlayer());
     }
 
     @Override
-    public void gameEnd(GameEndEvent e) {
-        // TODO: Call ranking update
+    public void gameVictory(GameVictoryEvent e) {
+        MegaMek.getLogger().info("Victory event triggered, updating ratings...");
+        handler.updateRatings();
+        MegaMek.getLogger().info("Ratings updated");
     }
+
+
 }

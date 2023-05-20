@@ -445,9 +445,10 @@ public abstract class BotClient extends Client {
                     sendDone(true);
                     break;
                 case PHASE_VICTORY:
+                    // Rather than disconnecting the bots
+                    // we can simply keep them for the next game
                     runEndGame();
-                    sendChat(Messages.getString("BotClient.Bye")); //$NON-NLS-1$
-                    die();
+                    sendDone(true);
                     break;
                 default:
                     break;
