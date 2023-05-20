@@ -501,10 +501,7 @@ public final class Player extends TurnOrdered implements IPlayer {
         int bonusHQ = 0;
         int bonusMD = 0;
         int bonusQ = 0;
-        if (game == null) {
-            return 0;
-        }
-        if (game.getEntitiesVector() == null) {
+        if (game == null || game.getEntitiesVector() == null) {
             return 0;
         }
         for (Entity entity : game.getEntitiesVector()) {
