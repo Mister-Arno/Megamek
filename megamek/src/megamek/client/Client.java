@@ -1236,11 +1236,11 @@ public class Client implements IClientCommandHandler {
     /**
      * Send a Nova CEWS update packet
      *
-     * @param ID
+     * @param id
      * @param net
      */
-    public void sendNovaChange(int ID, String net) {
-        Object[] data = { Integer.valueOf(ID), new String(net) };
+    public void sendNovaChange(int id, String net) {
+        Object[] data = {id, net};
         Packet packet = new Packet(Packet.COMMAND_ENTITY_NOVA_NETWORK_CHANGE, data);
         send(packet);
     }
@@ -1272,7 +1272,7 @@ public class Client implements IClientCommandHandler {
     @SuppressWarnings("unchecked")
     protected void handlePacket(Packet c) {
         if (c == null) {
-            System.out.println("client: got null packet"); //$NON-NLS-1$
+            MegaMek.getLogger().info("got null packet"); //$NON-NLS-1$
             return;
         }
         switch (c.getCommand()) {
@@ -1477,7 +1477,7 @@ public class Client implements IClientCommandHandler {
                     sDir.mkdir();
                 }
             } catch (Exception e) {
-                System.err.println("Unable to create savegames directory");
+                MegaMek.getLogger().error("Unable to create savegames directory");
             }
             try {
 
@@ -1489,8 +1489,8 @@ public class Client implements IClientCommandHandler {
                 fout.flush();
                 fout.close();
             } catch (Exception e) {
-                System.err.println("Unable to save file: " + sFinalFile);
-                e.printStackTrace();
+                MegaMek.getLogger().error("Unable to save file: " + sFinalFile);
+                MegaMek.getLogger().error(e);
             }
             break;
         case Packet.COMMAND_LOAD_SAVEGAME:
@@ -1499,7 +1499,7 @@ public class Client implements IClientCommandHandler {
                 File f = new File("savegames", loadFile);
                 sendLoadGame(f);
             } catch (Exception e) {
-                System.err.println("Unable to find the file: " + loadFile);
+                MegaMek.getLogger().error("Unable to find the file: " + loadFile);
             }
             break;
         case Packet.COMMAND_SENDING_SPECIAL_HEX_DISPLAY:
@@ -1518,31 +1518,33 @@ public class Client implements IClientCommandHandler {
             int cfrType = (int) c.getData()[0];
             GameCFREvent cfrEvt = new GameCFREvent(this, cfrType);
             switch (cfrType) {
-            case (Packet.COMMAND_CFR_DOMINO_EFFECT):
-                cfrEvt.setEntityId((int) c.getData()[1]);
-                break;
-            case Packet.COMMAND_CFR_AMS_ASSIGN:
-                cfrEvt.setEntityId((int) c.getData()[1]);
-                cfrEvt.setAmsEquipNum((int) c.getData()[2]);
-                cfrEvt.setWAAs((List<WeaponAttackAction>) c.getData()[3]);
-                break;
-            case Packet.COMMAND_CFR_APDS_ASSIGN:
-                cfrEvt.setEntityId((int) c.getData()[1]);
-                cfrEvt.setApdsDists((List<Integer>) c.getData()[2]);
-                cfrEvt.setWAAs((List<WeaponAttackAction>) c.getData()[3]);
-                break;
-            case Packet.COMMAND_CFR_HIDDEN_PBS:
-                cfrEvt.setEntityId((int) c.getObject(1));
-                cfrEvt.setTargetId((int) c.getObject(2));
-                break;
-            case Packet.COMMAND_CFR_TELEGUIDED_TARGET:
-                cfrEvt.setTeleguidedMissileTargets((List<Integer>)c.getObject(1));
-                cfrEvt.setTmToHitValues((List<Integer>)c.getObject(2));
-                break;
-            case Packet.COMMAND_CFR_TAG_TARGET:
-                cfrEvt.setTAGTargets((List<Integer>)c.getObject(1));
-                cfrEvt.setTAGTargetTypes((List<Integer>)c.getObject(2));
-                break;
+                case (Packet.COMMAND_CFR_DOMINO_EFFECT):
+                    cfrEvt.setEntityId((int) c.getData()[1]);
+                    break;
+                case Packet.COMMAND_CFR_AMS_ASSIGN:
+                    cfrEvt.setEntityId((int) c.getData()[1]);
+                    cfrEvt.setAmsEquipNum((int) c.getData()[2]);
+                    cfrEvt.setWAAs((List<WeaponAttackAction>) c.getData()[3]);
+                    break;
+                case Packet.COMMAND_CFR_APDS_ASSIGN:
+                    cfrEvt.setEntityId((int) c.getData()[1]);
+                    cfrEvt.setApdsDists((List<Integer>) c.getData()[2]);
+                    cfrEvt.setWAAs((List<WeaponAttackAction>) c.getData()[3]);
+                    break;
+                case Packet.COMMAND_CFR_HIDDEN_PBS:
+                    cfrEvt.setEntityId((int) c.getObject(1));
+                    cfrEvt.setTargetId((int) c.getObject(2));
+                    break;
+                case Packet.COMMAND_CFR_TELEGUIDED_TARGET:
+                    cfrEvt.setTeleguidedMissileTargets((List<Integer>)c.getObject(1));
+                    cfrEvt.setTmToHitValues((List<Integer>)c.getObject(2));
+                    break;
+                case Packet.COMMAND_CFR_TAG_TARGET:
+                    cfrEvt.setTAGTargets((List<Integer>)c.getObject(1));
+                    cfrEvt.setTAGTargetTypes((List<Integer>)c.getObject(2));
+                    break;
+                default:
+                    // Handle default case if necessary, since this technically isn't an Enum
             }
             game.processGameEvent(cfrEvt);
             break;
@@ -1550,6 +1552,8 @@ public class Client implements IClientCommandHandler {
             GameVictoryEvent gve = new GameVictoryEvent(this, game);
             game.processGameEvent(gve);
             break;
+        default:
+            // Handle default case if necessary, since this technically isn't an Enum
         }
     }
 
