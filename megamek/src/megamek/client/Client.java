@@ -1061,6 +1061,30 @@ public class Client implements IClientCommandHandler {
         game.getBoard().collapseBuilding((Vector<Coords>) packet.getObject(0));
     }
 
+    private void handleEntityAction(EntityAction ea) {
+        if (!game.hasEntity(ea.getEntityId())) {
+            return;
+        }
+
+        Entity entity = game.getEntity(ea.getEntityId());
+        if (ea instanceof TorsoTwistAction) {
+            TorsoTwistAction tta = (TorsoTwistAction) ea;
+            entity.setSecondaryFacing(tta.getFacing());
+        } else if (ea instanceof FlipArmsAction) {
+            FlipArmsAction faa = (FlipArmsAction) ea;
+            entity.setArmsFlipped(faa.getIsFlipped());
+        } else if (ea instanceof DodgeAction) {
+            entity.dodging = true;
+        } else if (ea instanceof AttackAction) {
+            // The equipment type of a club needs to be restored.
+            if (ea instanceof ClubAttackAction) {
+                ClubAttackAction caa = (ClubAttackAction) ea;
+                Mounted club = caa.getClub();
+                club.restore();
+            }
+        }
+    }
+
     /**
      * Loads entity firing data from the data in the net command
      */
@@ -1070,26 +1094,10 @@ public class Client implements IClientCommandHandler {
         int charge = c.getIntValue(1);
         boolean addAction = true;
         for (EntityAction ea : vector) {
+            handleEntityAction(ea);
             int entityId = ea.getEntityId();
-            if ((ea instanceof TorsoTwistAction) && game.hasEntity(entityId)) {
-                TorsoTwistAction tta = (TorsoTwistAction) ea;
-                Entity entity = game.getEntity(entityId);
-                entity.setSecondaryFacing(tta.getFacing());
-            } else if ((ea instanceof FlipArmsAction) && game.hasEntity(entityId)) {
-                FlipArmsAction faa = (FlipArmsAction) ea;
-                Entity entity = game.getEntity(entityId);
-                entity.setArmsFlipped(faa.getIsFlipped());
-            } else if ((ea instanceof DodgeAction) && game.hasEntity(entityId)) {
-                Entity entity = game.getEntity(entityId);
-                entity.dodging = true;
+            if ((ea instanceof DodgeAction) && game.hasEntity(entityId)) {
                 addAction = false;
-            } else if (ea instanceof AttackAction) {
-                // The equipment type of a club needs to be restored.
-                if (ea instanceof ClubAttackAction) {
-                    ClubAttackAction caa = (ClubAttackAction) ea;
-                    Mounted club = caa.getClub();
-                    club.restore();
-                }
             }
 
             if (addAction) {
