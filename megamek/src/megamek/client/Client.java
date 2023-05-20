@@ -1062,26 +1062,22 @@ public class Client implements IClientCommandHandler {
     }
 
     private void handleEntityAction(EntityAction ea) {
-        if (!game.hasEntity(ea.getEntityId())) {
-            return;
-        }
-
-        Entity entity = game.getEntity(ea.getEntityId());
-        if (ea instanceof TorsoTwistAction) {
-            TorsoTwistAction tta = (TorsoTwistAction) ea;
-            entity.setSecondaryFacing(tta.getFacing());
-        } else if (ea instanceof FlipArmsAction) {
-            FlipArmsAction faa = (FlipArmsAction) ea;
-            entity.setArmsFlipped(faa.getIsFlipped());
-        } else if (ea instanceof DodgeAction) {
-            entity.dodging = true;
-        } else if (ea instanceof AttackAction) {
-            // The equipment type of a club needs to be restored.
-            if (ea instanceof ClubAttackAction) {
-                ClubAttackAction caa = (ClubAttackAction) ea;
-                Mounted club = caa.getClub();
-                club.restore();
+        if (game.hasEntity(ea.getEntityId())) {
+            Entity entity = game.getEntity(ea.getEntityId());
+            if (ea instanceof TorsoTwistAction) {
+                TorsoTwistAction tta = (TorsoTwistAction) ea;
+                entity.setSecondaryFacing(tta.getFacing());
+            } else if (ea instanceof FlipArmsAction) {
+                FlipArmsAction faa = (FlipArmsAction) ea;
+                entity.setArmsFlipped(faa.getIsFlipped());
+            } else if (ea instanceof DodgeAction) {
+                entity.dodging = true;
             }
+        } else if (ea instanceof ClubAttackAction) {
+            // The equipment type of a club needs to be restored.
+            ClubAttackAction caa = (ClubAttackAction) ea;
+            Mounted club = caa.getClub();
+            club.restore();
         }
     }
 
