@@ -1900,7 +1900,7 @@ public class ClientGUI extends JPanel implements WindowListener, BoardViewListen
             // a player wishes to continue moving after a fall.
             if (curPanel instanceof ReportDisplay) {
                 // Tactical Genius
-                ((ReportDisplay) curPanel).appendReportTab(getClient().phaseReport);
+                ((ReportDisplay) curPanel).appendReportTab(getClient().getPhaseReport());
                 ((ReportDisplay) curPanel).resetReadyButton();
                 // Check if the player deserves an active reroll button
                 // (possible, if he gets one which he didn't use, and his

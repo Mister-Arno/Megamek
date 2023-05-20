@@ -270,7 +270,7 @@ public class ReportDisplay extends AbstractPhaseDisplay implements
             return;
         }
 
-        setReportTab(clientgui.getClient().getGame().getRoundCount(), clientgui.getClient().roundReport, clientgui.getClient().phaseReport);
+        setReportTab(clientgui.getClient().getGame().getRoundCount(), clientgui.getClient().getRoundReport(), clientgui.getClient().getPhaseReport());
         resetButtons();
         rerolled = false;
 
