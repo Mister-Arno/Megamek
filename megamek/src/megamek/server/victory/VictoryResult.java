@@ -35,11 +35,24 @@ public class VictoryResult implements IResult {
     protected HashMap<Integer, Double> teamScore = new HashMap<>();
     protected double hiScore = 0;
 
+    /**
+     * Constructor for an object indicating a win or loss.
+     * Initially, no scores are recorded
+     * @param win: boolean indicating if the game is won or lost
+     */
     protected VictoryResult(boolean win) {
+        // Normal constructor
         this.victory = win;
         tr = new Throwable();
     }
-    
+
+    /**
+     * Constructor for a single player/team victory indicating a win or loss
+     * Initially they get a score of 1.0
+     * @param win: boolean true if the game is won, false if lost
+     * @param player: player ID of the winning player (or PLAYER_NONE)
+     * @param team: team ID of the winning team (or TEAM_NONE)
+     */
     protected VictoryResult(boolean win, int player, int team) {
     	this.victory = win;
     	tr = new Throwable();
@@ -50,15 +63,27 @@ public class VictoryResult implements IResult {
             addTeamScore(team, 1.0);
         }
     }
-    
+
+    /**
+     * Constructor for a single player/team victory indicating no result (not a tie)
+     * @return VictoryResult object indicating no result (not a tie)
+     */
     protected static VictoryResult noResult() {
     	return new VictoryResult(false, IPlayer.PLAYER_NONE, IPlayer.TEAM_NONE);
     }
-    
+
+    /**
+     * Constructor for a single player/team victory indicating a tie
+     * @return VictoryResult object indicating a tie
+     */
     protected static VictoryResult drawResult() {
         return new VictoryResult(true, IPlayer.PLAYER_NONE, IPlayer.TEAM_NONE);
     }
 
+    /**
+     * Retrieve the winning player ID (the player with the highest score)
+     * @return int player ID of the winning player (or PLAYER_NONE if tie or when there is no player)
+     */
     public int getWinningPlayer() {
         double max = Double.MIN_VALUE;
         int maxPlayer = IPlayer.PLAYER_NONE;
@@ -79,6 +104,10 @@ public class VictoryResult implements IResult {
         return maxPlayer;
     }
 
+    /**
+     * Retrieve the winning team ID (the team with the highest score)
+     * @return int team ID of the winning team (or TEAM_NONE if tie or when there is no team)
+     */
     public int getWinningTeam() {
         double max = Double.MIN_VALUE;
         int maxTeam = IPlayer.TEAM_NONE;
@@ -101,6 +130,7 @@ public class VictoryResult implements IResult {
         return maxTeam;
     }
 
+
     protected void updateHiScore() {
         hiScore = calculateMaxScore(playerScore.values());
         hiScore = Math.max(hiScore, calculateMaxScore(teamScore.values()));
@@ -113,60 +143,114 @@ public class VictoryResult implements IResult {
                 .orElse(Double.MIN_VALUE);
     }
 
+    /**
+     * Adds the score for a player
+     * @param id: player ID
+     * @param score: score to add (it replaces the old score if any)
+     */
     public void addPlayerScore(int id, double score) {
         playerScore.put(id, score);
         updateHiScore();
     }
 
+    /**
+     * Adds the score for a team
+     * @param id: team ID
+     * @param score: score to add (it replaces the old score if any)
+     */
     public void addTeamScore(int id, double score) {
         teamScore.put(id, score);
         updateHiScore();
     }
 
+    /**
+     * Checks if a player is the winning player (has the highest score)
+     * @param id: player ID
+     * @return: true if the player is the winning player, false otherwise
+     */
     public boolean isWinningPlayer(int id) {
         double d = getPlayerScore(id);
         // two decimal compare..
         return ((d * 100) % 100) == ((hiScore * 100) % 100);
     }
 
+    /**
+     * Checks if a team is the winning team (has the highest score)
+     * @param id: team ID
+     * @return true if the team is the winning team, false otherwise
+     */
     public boolean isWinningTeam(int id) {
         double d = getTeamScore(id);
         // two decimal compare..
         return ((d * 100) % 100) == ((hiScore * 100) % 100);
     }
 
+    /**
+     * Checks if the game is won or lost
+     * @return true if the game is won, false otherwise
+     */
     public boolean victory() {
         return victory;
     }
 
+    /**
+     * Sets the game to won or lost
+     * @param b: true if the game is won, false otherwise
+     */
     public void setVictory(boolean b) {
         this.victory = b;
     }
 
+    /**
+     * Retrieves the score of a player
+     * @param id: player ID
+     * @return score of the player
+     */
     public double getPlayerScore(int id) {
         if (playerScore.get(id) == null)
             return 0.0;
         return playerScore.get(id);
     }
 
+    /**
+     * Retrieves the ID of all players
+     * @return ArrayList of player IDs
+     */
     public int[] getPlayers() {
         return intify(playerScore.keySet().toArray(new Integer[0]));
     }
 
+    /**
+     * Retrieves the score of a team
+     * @param id: team ID
+     * @return: score of the team
+     */
     public double getTeamScore(int id) {
         if (teamScore.get(id) == null)
             return 0.0;
         return teamScore.get(id);
     }
 
+    /**
+     * Retrieves the ID of all teams
+     * @return ArrayList of team IDs
+     */
     public int[] getTeams() {
         return intify(teamScore.keySet().toArray(new Integer[0]));
     }
 
+    /**
+     * Adds a report to the victory result
+     * @param r: report to add
+     */
     public void addReport(Report r) {
         reports.add(r);
     }
 
+    /**
+     * Retrieves all reports of the victory result
+     * @return ArrayList of reports
+     */
     public ArrayList<Report> getReports() {
         return reports;
     }
@@ -191,6 +275,10 @@ public class VictoryResult implements IResult {
         return "victory provided to you by:" + getTrace();
     }
 
+    /**
+     * Checks if the victory result is a draw
+     * @return true if the victory result is a draw, false otherwise
+     */
     public boolean isDraw() {
         return (getWinningPlayer() == IPlayer.PLAYER_NONE && getWinningTeam() == IPlayer.TEAM_NONE);
     }
