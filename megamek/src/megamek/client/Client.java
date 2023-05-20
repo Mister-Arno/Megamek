@@ -338,12 +338,6 @@ public class Client implements IClientCommandHandler {
     }
 
     private void initGameLog() {
-        // log = new GameLog(
-        // PreferenceManager.getClientPreferences().getGameLogFilename(),
-        // false,
-        // (new
-        // Integer(PreferenceManager.getClientPreferences().getGameLogMaxSize()).longValue()
-        // * 1024 * 1024) );
         log = new GameLog(PreferenceManager.getClientPreferences().getGameLogFilename());
         log.append("<html><body>");
     }
