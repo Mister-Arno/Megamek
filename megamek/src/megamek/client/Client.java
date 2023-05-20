@@ -194,12 +194,7 @@ public class Client implements IClientCommandHandler {
             // Instead, if we will have the event dispatch thread handle it,
             // by using SwingUtilities.invokeLater
             // Not running this on the AWT EDT can lead to dead-lock
-            Runnable handlePacketEvent = new Runnable() {
-                public void run() {
-                    Client.this.disconnected();
-                }
-            };
-            SwingUtilities.invokeLater(handlePacketEvent);
+            SwingUtilities.invokeLater(Client.this::disconnected);
         }
 
         @Override
@@ -212,11 +207,7 @@ public class Client implements IClientCommandHandler {
             // Client.handlePacket should play well with the AWT event queue,
             // but nothing appears to really be designed to be thread safe, so
             // this is a reasonable hack for now
-            Runnable handlePacketEvent = new Runnable() {
-                public void run() {
-                    handlePacket(e.getPacket());
-                }
-            };
+            Runnable handlePacketEvent = () -> handlePacket(e.getPacket());
             SwingUtilities.invokeLater(handlePacketEvent);
         }
 
