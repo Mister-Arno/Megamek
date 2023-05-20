@@ -1684,18 +1684,8 @@ public class Client implements IClientCommandHandler {
      */
     private void checkDuplicateNamesDuringDelete(List<Integer> ids) {
         ArrayList<Entity> myEntities = game.getPlayerEntities(game.getPlayer(localPlayerNumber), false);
-        Hashtable<String, ArrayList<Integer>> rawNameToId = new Hashtable<>(
-                (int) (myEntities.size() * 1.26));
 
-        for (Entity e : myEntities) {
-            String rawName = e.getShortNameRaw();
-            ArrayList<Integer> namedIds = rawNameToId.get(rawName);
-            if (namedIds == null) {
-                namedIds = new ArrayList<>();
-            }
-            namedIds.add(e.getId());
-            rawNameToId.put(rawName, namedIds);
-        }
+        Hashtable<String, ArrayList<Integer>> rawNameToId = buildRawNameToIdMap(myEntities);
 
         for (int id : ids) {
             Entity removedEntity = game.getEntity(id);
@@ -1706,24 +1696,64 @@ public class Client implements IClientCommandHandler {
             String removedRawName = removedEntity.getShortNameRaw();
             Integer count = duplicateNameHash.get(removedEntity.getShortNameRaw());
             if ((count != null) && (count > 1)) {
-                ArrayList<Integer> namedIds = rawNameToId.get(removedRawName);
-                for (Integer i : namedIds) {
-                    Entity e = game.getEntity(i);
-                    String eRawName = e.getShortNameRaw();
-                    if (eRawName.equals(removedRawName) && (e.duplicateMarker > removedEntity.duplicateMarker)) {
-                        e.duplicateMarker--;
-                        e.generateShortName();
-                        e.generateDisplayName();
-                        // Update the Entity, unless it's going to be deleted
-                        if (!ids.contains(e.getId())) {
-                            sendUpdateEntity(e);
-                        }
-                    }
-                }
+                updateDuplicateIdentifiers(removedEntity, removedRawName, rawNameToId, ids);
                 duplicateNameHash.put(removedEntity.getShortNameRaw(), Integer.valueOf(count - 1));
-
             } else if (count != null) {
                 duplicateNameHash.remove(removedEntity.getShortNameRaw());
+            }
+        }
+    }
+
+    /**
+     * Helper function for checkDuplicateNamesDuringDelete to increase readability
+     *
+     * @see megamek.client.Client#checkDuplicateNamesDuringDelete
+     * @param entities
+     * @return Map of raw names to ids
+     */
+    private Hashtable<String, ArrayList<Integer>> buildRawNameToIdMap(List<Entity> entities) {
+        Hashtable<String, ArrayList<Integer>> rawNameToId = new Hashtable<>((int) (entities.size() * 1.26));
+
+        for (Entity e : entities) {
+            String rawName = e.getShortNameRaw();
+            ArrayList<Integer> namedIds = rawNameToId.get(rawName);
+            if (namedIds == null) {
+                namedIds = new ArrayList<>();
+            }
+            namedIds.add(e.getId());
+            rawNameToId.put(rawName, namedIds);
+        }
+
+        return rawNameToId;
+    }
+
+    /**
+     * Helper function for checkDuplicateNamesDuringDelete to increase readability
+     *
+     * @see megamek.client.Client#checkDuplicateNamesDuringDelete
+     * @param removedEntity
+     * @param removedRawName
+     * @param rawNameToId
+     * @param ids
+     */
+    private void updateDuplicateIdentifiers(
+            Entity removedEntity,
+            String removedRawName,
+            Hashtable<String, ArrayList<Integer>> rawNameToId,
+            List<Integer> ids)
+    {
+        ArrayList<Integer> namedIds = rawNameToId.get(removedRawName);
+        for (Integer i : namedIds) {
+            Entity e = game.getEntity(i);
+            String eRawName = e.getShortNameRaw();
+            if (eRawName.equals(removedRawName) && (e.duplicateMarker > removedEntity.duplicateMarker)) {
+                e.duplicateMarker--;
+                e.generateShortName();
+                e.generateDisplayName();
+                // Update the Entity, unless it's going to be deleted
+                if (!ids.contains(e.getId())) {
+                    sendUpdateEntity(e);
+                }
             }
         }
     }
