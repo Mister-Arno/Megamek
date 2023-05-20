@@ -901,8 +901,8 @@ public class Client implements IClientCommandHandler {
 
             send(new Packet(Packet.COMMAND_LOAD_GAME, new Object[] { newGame }));
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Can't find local savegame " + f); //$NON-NLS-1$
+            MegaMek.getLogger().error("Can't find local savegame " + f); //$NON-NLS-1$
+            MegaMek.getLogger().error(e);
         }
     }
 
