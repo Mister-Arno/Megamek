@@ -169,9 +169,7 @@ public class VictoryResult implements IResult {
      * @return: true if the player is the winning player, false otherwise
      */
     public boolean isWinningPlayer(int id) {
-        double d = getPlayerScore(id);
-        // two decimal compare..
-        return ((d * 100) % 100) == ((hiScore * 100) % 100);
+        return Math.abs(getPlayerScore(id) - hiScore) < 0.01;
     }
 
     /**
@@ -180,9 +178,7 @@ public class VictoryResult implements IResult {
      * @return true if the team is the winning team, false otherwise
      */
     public boolean isWinningTeam(int id) {
-        double d = getTeamScore(id);
-        // two decimal compare..
-        return ((d * 100) % 100) == ((hiScore * 100) % 100);
+        return Math.abs(getTeamScore(id) - hiScore) < 0.01;
     }
 
     /**
