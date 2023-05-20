@@ -388,8 +388,7 @@ public class Game implements Serializable, IGame {
      */
     public void setupTeams() {
         Vector<Team> initTeams = new Vector<>();
-        boolean useTeamInit = getOptions().getOption(OptionsConstants.BASE_TEAM_INITIATIVE)
-                                          .booleanValue();
+        boolean useTeamInit = getOptions().getOption(OptionsConstants.BASE_TEAM_INITIATIVE).booleanValue();
 
         // Get all NO_TEAM players. If team_initiative is false, all
         // players are on their own teams for initiative purposes.
@@ -1411,7 +1410,7 @@ public class Game implements Serializable, IGame {
 
         // We also need to remove it from the list of things to be deployed...
         // we might still be in this list if we never joined the game
-        if (deploymentTable.size() > 0) {
+        if (!deploymentTable.isEmpty()) {
             Enumeration<Vector<Entity>> iter = deploymentTable.elements();
 
             while (iter.hasMoreElements()) {
@@ -1587,7 +1586,7 @@ public class Game implements Serializable, IGame {
         //checkPositionCacheConsistency();
         // Make sure the look-up is initialized
         if (entityPosLookup == null
-                || (entityPosLookup.isEmpty() && entities.size() > 0)) {
+                || (entityPosLookup.isEmpty() && !entities.isEmpty())) {
             resetEntityPositionLookup();
         }
         Set<Integer> posEntities = entityPosLookup.get(c);
