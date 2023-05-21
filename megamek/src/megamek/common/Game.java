@@ -1582,6 +1582,28 @@ public class Game implements Serializable, IGame {
         return getEntitiesVector(c, false);
     }
 
+
+    private void processEntity(List<Entity> vector, List<Integer> entitiesToRemove, Coords c, boolean ignore, Integer eId){
+        // if the entity with the given ID doesn't exist, we will update the lookup table
+        // and move on
+        Entity e = getEntity(eId);
+        if(e == null) {
+            entitiesToRemove.add(eId);
+            return;
+        }
+
+        if (e.isTargetable() || ignore) {
+            vector.add(e);
+
+            // Sanity check
+            HashSet<Coords> positions = e.getOccupiedCoords();
+            if (!positions.contains(c)) {
+                System.out.println("Game.getEntitiesVector(1) Error! "
+                        + e.getDisplayName() + " is not in " + c + "!");
+            }
+        }
+    }
+
     /**
      * Return a List of Entities at Coords <code>c</code>
      *
@@ -1593,34 +1615,17 @@ public class Game implements Serializable, IGame {
     public synchronized List<Entity> getEntitiesVector(Coords c, boolean ignore) {
         //checkPositionCacheConsistency();
         // Make sure the look-up is initialized
-        if (entityPosLookup == null
-                || (entityPosLookup.isEmpty() && !entities.isEmpty())) {
+        if (entityPosLookup == null || (entityPosLookup.isEmpty() && !entities.isEmpty())) {
             resetEntityPositionLookup();
         }
         Set<Integer> posEntities = entityPosLookup.get(c);
         List<Entity> vector = new ArrayList<>();
         if (posEntities != null) {
+            List<Integer> entitiesToRemove = new ArrayList<>();
             for (Integer eId : posEntities) {
-                Entity e = getEntity(eId);
-                
-                // if the entity with the given ID doesn't exist, we will update the lookup table
-                // and move on
-                if(e == null) {
-                    posEntities.remove(eId);
-                    continue;
-                }
-                
-                if (e.isTargetable() || ignore) {
-                    vector.add(e);
-
-                    // Sanity check
-                    HashSet<Coords> positions = e.getOccupiedCoords();
-                    if (!positions.contains(c)) {
-                        System.out.println("Game.getEntitiesVector(1) Error! "
-                                + e.getDisplayName() + " is not in " + c + "!");
-                    }
-                }
+                processEntity(vector, entitiesToRemove, c, ignore, eId);
             }
+            entitiesToRemove.forEach(posEntities::remove);
         }
         return Collections.unmodifiableList(vector);
     }
