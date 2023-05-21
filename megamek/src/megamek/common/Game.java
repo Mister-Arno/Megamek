@@ -2833,62 +2833,50 @@ public class Game implements Serializable, IGame {
      * empty.
      */
     public Iterator<Entity> getSelectedEntities(EntitySelector selector) {
-        Iterator<Entity> retVal;
-
         // If no selector was supplied, return all entities.
         if (null == selector) {
-            retVal = this.getEntities();
+            return this.getEntities();
         }
+
 
         // Otherwise, return an anonymous Enumeration
         // that selects entities in this game.
-        else {
-            final EntitySelector entry = selector;
-            retVal = new Iterator<Entity>() {
-                private EntitySelector entitySelector = entry;
-                private Entity current = null;
-                private Iterator<Entity> iter = getEntities();
 
-                // Do any more entities meet the selection criteria?
-                public boolean hasNext() {
-                    // See if we have a pre-approved entity.
-                    if (null == current) {
+        return new Iterator<Entity>() {
+            private Entity current = null;
+            private Iterator<Entity> iter = getEntities();
 
-                        // Find the first acceptable entity
-                        while ((null == current) && iter.hasNext()) {
-                            current = iter.next();
-                            if (!entitySelector.accept(current)) {
-                                current = null;
-                            }
-                        }
+            // Do any more entities meet the selection criteria?
+            public boolean hasNext() {
+                // Find the first acceptable entity
+                while ((null == current) && iter.hasNext()) {
+                    current = iter.next();
+                    if (!selector.accept(current)) {
+                        current = null;
                     }
-                    return (null != current);
                 }
 
-                // Get the next entity that meets the selection criteria.
-                public Entity next() {
-                    // Pre-approve an entity.
-                    if (!hasNext()) {
-                        return null;
-                    }
+                return (null != current);
+            }
 
-                    // Use the pre-approved entity, and null out our reference.
-                    Entity next = current;
-                    current = null;
-                    return next;
+            // Get the next entity that meets the selection criteria.
+            public Entity next() {
+                // Pre-approve an entity.
+                if (!hasNext()) {
+                    return null;
                 }
 
-                @Override
-                public void remove() {
-                    throw new UnsupportedOperationException();
-                }
-            };
+                // Use the pre-approved entity, and null out our reference.
+                Entity next = current;
+                current = null;
+                return next;
+            }
 
-        } // End use-selector
-
-        // Return the selected entities.
-        return retVal;
-
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
     }
 
     /**
