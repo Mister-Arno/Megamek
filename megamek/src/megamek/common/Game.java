@@ -3214,36 +3214,31 @@ public class Game implements Serializable, IGame {
             r.add(flare.position.getBoardNum());
             r.newlines = 0;
             reports.addElement(r);
-            if ((flare.flags & Flare.F_IGNITED) != 0) {
-                flare.turnsToBurn--;
-                if ((flare.flags & Flare.F_DRIFTING) != 0) {
-                    int dir = planetaryConditions.getWindDirection();
-                    int str = planetaryConditions.getWindStrength();
 
+            boolean isIgnited = (flare.flags & Flare.F_IGNITED) != 0;
+            boolean isIgnitedAndDrifting = isIgnited & (flare.flags & Flare.F_DRIFTING) != 0;
+
+            if (isIgnitedAndDrifting) {
+                flare.turnsToBurn--;
+                int dir = planetaryConditions.getWindDirection();
+                int str = planetaryConditions.getWindStrength();
+
+                if (str > 0) {
                     // strength 1 and 2: drift 1 hex
-                    // strength 3: drift 2 hexes
-                    // strength 4: drift 3 hexes
-                    // for each above strenght 4 (storm), drift one more
-                    if (str > 0) {
+                    flare.position = flare.position.translated(dir);
+
+                    for (int j = 3; j <= Math.min(str, 6); j++){
+                        // drift 1 hex for each strength 3-6
                         flare.position = flare.position.translated(dir);
-                        if (str > 2) {
-                            flare.position = flare.position.translated(dir);
-                        }
-                        if (str > 3) {
-                            flare.position = flare.position.translated(dir);
-                        }
-                        if (str > 4) {
-                            flare.position = flare.position.translated(dir);
-                        }
-                        if (str > 5) {
-                            flare.position = flare.position.translated(dir);
-                        }
-                        r = new Report(5236);
-                        r.add(flare.position.getBoardNum());
-                        r.newlines = 0;
-                        reports.addElement(r);
                     }
+
+                    r = new Report(5236);
+                    r.add(flare.position.getBoardNum());
+                    r.newlines = 0;
+                    reports.addElement(r);
                 }
+            } else if (isIgnited){
+                flare.turnsToBurn--;
             } else {
                 r = new Report(5237);
                 r.newlines = 0;
