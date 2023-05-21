@@ -381,17 +381,8 @@ public class Game implements Serializable, IGame {
         return null;
     }
 
-    /**
-     * Set up the teams vector. Each player on a team (Team 1 .. Team X) is
-     * placed in the appropriate vector. Any player on 'No Team', is placed in
-     * their own object
-     */
-    public void setupTeams() {
-        Vector<Team> initTeams = new Vector<>();
-        boolean useTeamInit = getOptions().getOption(OptionsConstants.BASE_TEAM_INITIATIVE).booleanValue();
 
-        // Get all NO_TEAM players. If team_initiative is false, all
-        // players are on their own teams for initiative purposes.
+    private void noTeamPlayersInitTeams(Vector<Team> initTeams, boolean useTeamInit){
         for (Enumeration<IPlayer> i = getPlayers(); i.hasMoreElements(); ) {
             final IPlayer player = i.nextElement();
             // Ignore players not on a team
@@ -404,25 +395,42 @@ public class Game implements Serializable, IGame {
                 initTeams.addElement(newTeam);
             }
         }
+    }
 
-        if (useTeamInit) {
-            // Now, go through all the teams, and add the appropriate player
-            for (int t = IPlayer.TEAM_NONE + 1; t < IPlayer.MAX_TEAMS; t++) {
-                Team newTeam = null;
-                for (Enumeration<IPlayer> i = getPlayers(); i.hasMoreElements(); ) {
-                    final IPlayer player = i.nextElement();
-                    if (player.getTeam() == t) {
-                        if (newTeam == null) {
-                            newTeam = new Team(t);
-                        }
-                        newTeam.addPlayer(player);
+    private void teamPlayersInitTeams(Vector<Team> initTeams){
+        for (int t = IPlayer.TEAM_NONE + 1; t < IPlayer.MAX_TEAMS; t++) {
+            Team newTeam = null;
+            for (Enumeration<IPlayer> i = getPlayers(); i.hasMoreElements(); ) {
+                final IPlayer player = i.nextElement();
+                if (player.getTeam() == t) {
+                    if (newTeam == null) {
+                        newTeam = new Team(t);
                     }
-                }
-
-                if (newTeam != null) {
-                    initTeams.addElement(newTeam);
+                    newTeam.addPlayer(player);
                 }
             }
+
+            if (newTeam != null) {
+                initTeams.addElement(newTeam);
+            }
+        }
+    }
+
+    /**
+     * Set up the teams vector. Each player on a team (Team 1 .. Team X) is
+     * placed in the appropriate vector. Any player on 'No Team', is placed in
+     * their own object
+     */
+    public void setupTeams() {
+        Vector<Team> initTeams = new Vector<>();
+        boolean useTeamInit = getOptions().getOption(OptionsConstants.BASE_TEAM_INITIATIVE).booleanValue();
+
+        // Get all NO_TEAM players. If team_initiative is false, all
+        // players are on their own teams for initiative purposes.
+        noTeamPlayersInitTeams(initTeams, useTeamInit);
+
+        if (useTeamInit) {
+            teamPlayersInitTeams(initTeams);
         }
 
         // May need to copy state over from previous teams, such as initiative
