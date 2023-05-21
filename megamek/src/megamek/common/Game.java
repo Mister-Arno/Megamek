@@ -3481,7 +3481,38 @@ public class Game implements Serializable, IGame {
         }
         return count;
     }
-    
+    private void checkEntityPositionsInCache(){
+        for (Entity e : entities) {
+            HashSet<Coords> positions = e.getOccupiedCoords();
+            for (Coords c : positions) {
+                HashSet<Integer> ents = entityPosLookup.get(c);
+                if ((ents != null) && !ents.contains(e.getId())) {
+                    System.out.println("Entity " + e.getId() + " is in "
+                            + e.getPosition() + " however the position cache "
+                            + "does not have it in that position!");
+                }
+            }
+        }
+    }
+
+    private void checkEntityPositionInEntityPosLookup(){
+        for (Coords c : entityPosLookup.keySet()) {
+            for (Integer eId : entityPosLookup.get(c)) {
+                Entity e = getEntity(eId);
+                if (e == null) {
+                    continue;
+                }
+                HashSet<Coords> positions = e.getOccupiedCoords();
+                if (!positions.contains(c)) {
+                    System.out.println("Entity Position Cache thinks Entity "
+                            + eId + "is in " + c
+                            + " but the Entity thinks it's in "
+                            + e.getPosition());
+                }
+            }
+        }
+    }
+
     /**
      * A check to ensure that the position cache is properly updated.  This 
      * is only used for debugging purposes, and will cause a number of things
@@ -3520,32 +3551,8 @@ public class Game implements Serializable, IGame {
             }
             System.out.println("Missing ids: " + missingIds);
         }
-        for (Entity e : entities) {
-            HashSet<Coords> positions = e.getOccupiedCoords();
-            for (Coords c : positions) {
-                HashSet<Integer> ents = entityPosLookup.get(c);
-                if ((ents != null) && !ents.contains(e.getId())) {
-                    System.out.println("Entity " + e.getId() + " is in "
-                            + e.getPosition() + " however the position cache "
-                            + "does not have it in that position!");
-                }
-            }
-        }
-        for (Coords c : entityPosLookup.keySet()) {
-            for (Integer eId : entityPosLookup.get(c)) {
-                Entity e = getEntity(eId);
-                if (e == null) {
-                    continue;
-                }
-                HashSet<Coords> positions = e.getOccupiedCoords();
-                if (!positions.contains(c)) {
-                    System.out.println("Entity Position Cache thinks Entity "
-                            + eId + "is in " + c
-                            + " but the Entity thinks it's in "
-                            + e.getPosition());
-                }
-            }
-        }
+        checkEntityPositionsInCache();
+        checkEntityPositionInEntityPosLookup();
     }
 
     /**
