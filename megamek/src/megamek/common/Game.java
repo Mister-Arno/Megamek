@@ -2871,59 +2871,44 @@ public class Game implements Serializable, IGame {
      * accepts. This value will not be <code>null</code> but it may be
      * empty.
      */
-    public Enumeration<Entity> getSelectedOutOfGameEntities(
-            EntitySelector selector) {
-        Enumeration<Entity> retVal;
-
+    public Enumeration<Entity> getSelectedOutOfGameEntities(EntitySelector selector) {
         // If no selector was supplied, return all entities.
         if (null == selector) {
-            retVal = vOutOfGame.elements();
+            return vOutOfGame.elements();
         }
 
         // Otherwise, return an anonymous Enumeration
         // that selects entities in this game.
-        else {
-            final EntitySelector entry = selector;
-            retVal = new Enumeration<Entity>() {
-                private EntitySelector entitySelector = entry;
-                private Entity current = null;
-                private Enumeration<Entity> iter = vOutOfGame.elements();
+        return new Enumeration<Entity>() {
+            private final EntitySelector entitySelector = selector;
+            private Entity current = null;
+            private Enumeration<Entity> iter = vOutOfGame.elements();
 
-                // Do any more entities meet the selection criteria?
-                public boolean hasMoreElements() {
-                    // See if we have a pre-approved entity.
-                    if (null == current) {
-
-                        // Find the first acceptable entity
-                        while ((null == current) && iter.hasMoreElements()) {
-                            current = iter.nextElement();
-                            if (!entitySelector.accept(current)) {
-                                current = null;
-                            }
-                        }
+            // Do any more entities meet the selection criteria?
+            public boolean hasMoreElements() {
+                // Find the first acceptable entity
+                while ((null == current) && iter.hasMoreElements()) {
+                    current = iter.nextElement();
+                    if (!entitySelector.accept(current)) {
+                        current = null;
                     }
-                    return (null != current);
+                }
+                return (null != current);
+            }
+
+            // Get the next entity that meets the selection criteria.
+            public Entity nextElement() {
+                // Pre-approve an entity.
+                if (!hasMoreElements()) {
+                    return null;
                 }
 
-                // Get the next entity that meets the selection criteria.
-                public Entity nextElement() {
-                    // Pre-approve an entity.
-                    if (!hasMoreElements()) {
-                        return null;
-                    }
-
-                    // Use the pre-approved entity, and null out our reference.
-                    Entity next = current;
-                    current = null;
-                    return next;
+                // Use the pre-approved entity, and null out our reference.
+                Entity next = current;
+                current = null;
+                return next;
                 }
-            };
-
-        } // End use-selector
-
-        // Return the selected entities.
-        return retVal;
-
+        };
     }
 
     /**
