@@ -54,4 +54,16 @@ public class GameTest {
         assertSame(winningPlayer, victoryResult2.getWinningPlayer());
         assertSame(winningTeam, victoryResult2.getWinningTeam());
     }
+
+    @Test
+    public void getPlayerTest() {
+        IPlayer newPlayer = new Player(1,"Player1");
+        Game newGame = new Game();
+
+        newGame.addPlayer(1,newPlayer);
+
+        IPlayer fetchedPlayer = newGame.getPlayer(newPlayer.getName());
+
+        assertEquals(newPlayer, fetchedPlayer);
+    }
 }
