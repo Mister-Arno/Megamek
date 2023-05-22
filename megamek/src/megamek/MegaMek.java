@@ -78,6 +78,10 @@ public class MegaMek {
 
     public static final String DOCS_PATH = "./docs";
 
+    private static final String ERROR_MESSAGE = "Error in creating directory ./logs. We know this is annoying, and apologise. "
+            + "Please submit a bug report at https://github.com/MegaMek/megamek/issues "
+            + " and we will try to resolve your issue.";
+
     public static void main(String[] args) {
         CommandLineParser cp = new CommandLineParser(args);
         String logFileName = determineLogFileName(cp);
@@ -263,9 +267,7 @@ public class MegaMek {
         File logDir = new File(sLogDir);
 
         if(!logDir.exists() && !logDir.mkdir()){
-            getLogger().error("Error in creating directory ./logs. We know this is annoying, and apologise. "
-                                + "Please submit a bug report at https://github.com/MegaMek/megamek/issues "
-                                + " and we will try to resolve your issue.");
+            getLogger().error(ERROR_MESSAGE);
         }
         try {
             PrintStream ps = new PrintStream(
@@ -678,10 +680,7 @@ public class MegaMek {
                 filename = getTokenValue();
                 nextToken();
                 if (!new File(DOCS_PATH).exists() && !new File(DOCS_PATH).mkdir()) {
-                    getLogger().error(
-                            "Error in creating directory ./docs. We know this is annoying, and apologise. "
-                                    + "Please submit a bug report at https://github.com/MegaMek/megamek/issues "
-                                    + " and we will try to resolve your issue.");
+                    getLogger().error(ERROR_MESSAGE);
 
                 }
                 File file = new File(DOCS_PATH + filename);
@@ -716,10 +715,7 @@ public class MegaMek {
                 nextToken();
 
                 if (!new File(DOCS_PATH).exists() && !new File(DOCS_PATH).mkdir()) {
-                    getLogger().error(
-                            "Error in creating directory ./docs. We know this is annoying, and apologise. "
-                                    + "Please submit a bug report at https://github.com/MegaMek/megamek/issues "
-                                    + " and we will try to resolve your issue.");
+                    getLogger().error(ERROR_MESSAGE);
 
                 }
 
@@ -804,11 +800,7 @@ public class MegaMek {
             nextToken();
 
             if (!new File(DOCS_PATH).exists() && !new File(DOCS_PATH).mkdir()) {
-                getLogger().error(
-                        "Error in creating directory ./docs. We know this is annoying, and apologise. "
-                                + "Please submit a bug report at https://github.com/MegaMek/megamek/issues "
-                                + " and we will try to resolve your issue.");
-
+                getLogger().error(ERROR_MESSAGE);
             }
             File file = new File(DOCS_PATH + filename);
             try (Writer w = new FileWriter(file); BufferedWriter bw = new BufferedWriter(w)) {
