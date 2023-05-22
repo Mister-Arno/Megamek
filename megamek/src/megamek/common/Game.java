@@ -16,18 +16,7 @@
 package megamek.common;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.IntUnaryOperator;
 
@@ -477,6 +466,12 @@ public class Game implements Serializable, IGame {
             return null;
         }
         return playerIds.get(Integer.valueOf(id));
+    }
+    public IPlayer getPlayer(String name) {
+        return players.stream()
+                .filter(player -> Objects.equals(name, player.getName()))
+                .findFirst()
+                .orElse(null);
     }
 
     public void addPlayer(int id, IPlayer player) {
@@ -1754,13 +1749,13 @@ public class Game implements Serializable, IGame {
      *         coordinates who are enemies of the given unit.
      */
     public Iterator<Entity> getAllEnemyEntities(final Entity currentEntity) {
-    	return getSelectedEntities(new EntitySelector() {
-    		private Entity friendly = currentEntity;
-    		
-    		public boolean accept(Entity entity) {
-    			return entity.isTargetable() && entity.isEnemyOf(friendly);
-    		}
-    	});
+        return getSelectedEntities(new EntitySelector() {
+            private Entity friendly = currentEntity;
+
+            public boolean accept(Entity entity) {
+                return entity.isTargetable() && entity.isEnemyOf(friendly);
+            }
+        });
     }
 
     /**
@@ -3170,10 +3165,10 @@ public class Game implements Serializable, IGame {
      * well as other light sources.
      */
     public int isPositionIlluminated(Coords c) {
-    	// fix for NPE when recovering spacecraft while in visual range of enemy
-    	if (getBoard().inSpace()) {
-    		return ILLUMINATED_NONE;
-    	}
+        // fix for NPE when recovering spacecraft while in visual range of enemy
+        if (getBoard().inSpace()) {
+            return ILLUMINATED_NONE;
+        }
         // Flares happen first, because they totally negate nighttime penalties
         for (Flare flare : flares) {
             if (flare.illuminates(c)) {
