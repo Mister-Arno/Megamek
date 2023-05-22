@@ -1617,7 +1617,7 @@ public class Game implements Serializable, IGame {
     public synchronized List<Entity> getEntitiesVector(Coords c, boolean ignore) {
         //checkPositionCacheConsistency();
         // Make sure the look-up is initialized
-        if (entityPosLookup == null || (entityPosLookup.isEmpty() && !entities.isEmpty())) {
+        if (entityPosLookup.isEmpty() && !entities.isEmpty()) {
             resetEntityPositionLookup();
         }
         Set<Integer> posEntities = entityPosLookup.get(c);
@@ -3217,7 +3217,7 @@ public class Game implements Serializable, IGame {
             reports.addElement(r);
 
             boolean isIgnited = (flare.flags & Flare.F_IGNITED) != 0;
-            boolean isIgnitedAndDrifting = isIgnited & (flare.flags & Flare.F_DRIFTING) != 0;
+            boolean isIgnitedAndDrifting = isIgnited && (flare.flags & Flare.F_DRIFTING) != 0;
 
             if (isIgnitedAndDrifting) {
                 flare.turnsToBurn--;
