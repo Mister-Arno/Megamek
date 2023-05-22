@@ -3467,9 +3467,10 @@ public class Game implements Serializable, IGame {
 
     private int countEntitiesInCache(List<Integer> entitiesInCache) {
         int count = 0;
-        for (Coords c : entityPosLookup.keySet()) {
-            count += entityPosLookup.get(c).size();
-            entitiesInCache.addAll(entityPosLookup.get(c));
+        for(Map.Entry<Coords, HashSet<Integer>> entry : entityPosLookup.entrySet()){
+            HashSet<Integer> value = entry.getValue();
+            count += value.size();
+            entitiesInCache.addAll(value);
         }
         return count;
     }
@@ -3488,8 +3489,9 @@ public class Game implements Serializable, IGame {
     }
 
     private void checkEntityPositionInEntityPosLookup(){
-        for (Coords c : entityPosLookup.keySet()) {
-            for (Integer eId : entityPosLookup.get(c)) {
+        for(Map.Entry<Coords, HashSet<Integer>> entry : entityPosLookup.entrySet()) {
+            Coords c = entry.getKey();
+            for (Integer eId : entry.getValue()) {
                 Entity e = getEntity(eId);
                 if (e == null) {
                     continue;
