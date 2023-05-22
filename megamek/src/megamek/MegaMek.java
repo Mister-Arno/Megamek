@@ -751,94 +751,88 @@ public class MegaMek {
             processUnitExporter(false);
         }
 
-        private void processUnitExporter(boolean officialUnitList) {
-            String filename;
-            if ((getToken() == TOK_LITERAL) || officialUnitList) {
-                if (officialUnitList) {
-                    filename = MechFileParser.FILENAME_OFFICIAL_UNITS;
-                } else {
-                    filename = getTokenValue();
-                }
-                nextToken();
+        private void writeMechSummariesToFile(MechSummary[] units, BufferedWriter bw, boolean officialUnitList) throws IOException {
+            for (MechSummary unit : units) {
+                    String unitType = unit.getUnitType();
+                    if (unitType.equalsIgnoreCase("mek")) {
+                        unitType = "'Mech";
+                    }
 
-                if (!new File(DOCS_PATH).exists() && !new File(DOCS_PATH).mkdir()) {
-                    getLogger().error(
-                            "Error in creating directory ./docs. We know this is annoying, and apologise. "
-                                    + "Please submit a bug report at https://github.com/MegaMek/megamek/issues "
-                                    + " and we will try to resolve your issue.");
-
-                }
-                File file = new File(DOCS_PATH + filename);
-                try (Writer w = new FileWriter(file); BufferedWriter bw = new BufferedWriter(w)) {
-                    if (officialUnitList) {
-                        bw.write("Megamek Official Unit List");
-                        bw.newLine();
-                        bw.write("This file can be regenerated with java -jar MegaMek.jar -oul");
-                        bw.newLine();
-                        bw.write("Format is: Chassis Model|");
+                    if (!officialUnitList) {
+                        bw.write(unitType);
+                        bw.write(",");
+                        bw.write(unit.getUnitSubType());
+                        bw.write(",");
+                        bw.write(unit.getChassis());
+                        bw.write(",");
+                        bw.write(unit.getModel());
+                        bw.write(",");
+                        bw.write(Integer.toString(unit.getBV()));
+                        bw.write(",");
+                        bw.write(Long.toString(unit.getCost()));
+                        bw.write(",");
+                        bw.write(Long.toString(unit.getUnloadedCost()));
+                        bw.write(",");
+                        bw.write(Integer.toString(unit.getYear()));
+                        bw.write(",");
+                        bw.write(TechConstants.getLevelDisplayableName(unit.getType()));
+                        bw.write(",");
+                        bw.write(Double.toString(unit.getTons()));
+                        bw.write(",");
+                        bw.write(unit.isClan() ? "Clan" : "IS");
+                        bw.write(unit.isCanon() ? "Canon," : "Non-Canon,");
+                        bw.write(Integer.toString(unit.getWalkMp()));
+                        bw.write(",");
+                        bw.write(Integer.toString(unit.getRunMp()));
+                        bw.write(",");
+                        bw.write(Integer.toString(unit.getJumpMp()));
                     } else {
-                        bw.write("Megamek Unit Database");
-                        bw.newLine();
-                        bw.write("This file can be regenerated with java -jar MegaMek.jar -export filename");
-                        bw.newLine();
-                        bw.write("Type,SubType,Name,Model,BV,Cost (Loaded), Cost (Unloaded),Year,TechLevel,Tonnage,Tech,Canon,Walk,Run,Jump");
+                        bw.write(unit.getChassis()
+                                + (unit.getModel().equals("") ? "|" : " "
+                                + unit.getModel() + "|"));
                     }
                     bw.newLine();
-
-                    MechSummary[] units = MechSummaryCache.getInstance(officialUnitList).getAllMechs();
-                    for (MechSummary unit : units) {
-                        String unitType = unit.getUnitType();
-                        if (unitType.equalsIgnoreCase("mek")) {
-                            unitType = "'Mech";
-                        }
-
-                        if (!officialUnitList) {
-                            bw.write(unitType);
-                            bw.write(",");
-                            bw.write(unit.getUnitSubType());
-                            bw.write(",");
-                            bw.write(unit.getChassis());
-                            bw.write(",");
-                            bw.write(unit.getModel());
-                            bw.write(",");
-                            bw.write(Integer.toString(unit.getBV()));
-                            bw.write(",");
-                            bw.write(Long.toString(unit.getCost()));
-                            bw.write(",");
-                            bw.write(Long.toString(unit.getUnloadedCost()));
-                            bw.write(",");
-                            bw.write(Integer.toString(unit.getYear()));
-                            bw.write(",");
-                            bw.write(TechConstants.getLevelDisplayableName(unit.getType()));
-                            bw.write(",");
-                            bw.write(Double.toString(unit.getTons()));
-                            bw.write(",");
-                            if (unit.isClan()) {
-                                bw.write("Clan,");
-                            } else {
-                                bw.write("IS,");
-                            }
-                            if (unit.isCanon()) {
-                                bw.write("Canon,");
-                            } else {
-                                bw.write("Non-Canon,");
-                            }
-                            bw.write(Integer.toString(unit.getWalkMp()));
-                            bw.write(",");
-                            bw.write(Integer.toString(unit.getRunMp()));
-                            bw.write(",");
-                            bw.write(Integer.toString(unit.getJumpMp()));
-                        } else {
-                            bw.write(unit.getChassis()
-                                    + (unit.getModel().equals("") ? "|" : " "
-                                    + unit.getModel() + "|"));
-                        }
-                        bw.newLine();
-                    }
-                } catch (Exception ex) {
-                    getLogger().error(ex);
                 }
+        }
+
+        private void processUnitExporter(boolean officialUnitList) {
+            if(getToken() != TOK_LITERAL && !officialUnitList) {
+                System.exit(0);
             }
+
+            String filename = officialUnitList ? MechFileParser.FILENAME_OFFICIAL_UNITS : getTokenValue();
+            nextToken();
+
+            if (!new File(DOCS_PATH).exists() && !new File(DOCS_PATH).mkdir()) {
+                getLogger().error(
+                        "Error in creating directory ./docs. We know this is annoying, and apologise. "
+                                + "Please submit a bug report at https://github.com/MegaMek/megamek/issues "
+                                + " and we will try to resolve your issue.");
+
+            }
+            File file = new File(DOCS_PATH + filename);
+            try (Writer w = new FileWriter(file); BufferedWriter bw = new BufferedWriter(w)) {
+                if (officialUnitList) {
+                    bw.write("Megamek Official Unit List");
+                    bw.newLine();
+                    bw.write("This file can be regenerated with java -jar MegaMek.jar -oul");
+                    bw.newLine();
+                    bw.write("Format is: Chassis Model|");
+                } else {
+                    bw.write("Megamek Unit Database");
+                    bw.newLine();
+                    bw.write("This file can be regenerated with java -jar MegaMek.jar -export filename");
+                    bw.newLine();
+                    bw.write("Type,SubType,Name,Model,BV,Cost (Loaded), Cost (Unloaded),Year,TechLevel,Tonnage,Tech,Canon,Walk,Run,Jump");
+                }
+                bw.newLine();
+
+                MechSummary[] units = MechSummaryCache.getInstance(officialUnitList).getAllMechs();
+                writeMechSummariesToFile(units, bw, officialUnitList);
+            } catch (Exception ex) {
+                getLogger().error(ex);
+            }
+
             System.exit(0);
         }
 
