@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 public class VictoryResultTest {
 
     @Test
-    public void testConstructorsGeneralTest(){
+    public void testConstructor1(){
         // test if objects have the right behavior after construction
 
         // Constructor 1 indicates a win or a loss
@@ -27,7 +27,17 @@ public class VictoryResultTest {
         assertEquals(IPlayer.TEAM_NONE, result2.getWinningTeam());
         assertTrue(result2.isDraw());
 
+        // Constructor 3
+        VictoryResult result8 = VictoryResult.noResult();
+        assertFalse(result8.victory());
+        assertTrue(result8.isDraw());
 
+        VictoryResult result9 = VictoryResult.drawResult();
+        assertTrue(result9.victory());
+        assertTrue(result9.isDraw());
+    }
+    @Test
+    public void testConstructor2() {
         // Constructor 2
         VictoryResult result3 = new VictoryResult(true, IPlayer.PLAYER_NONE, IPlayer.TEAM_NONE);
         assertTrue(result3.victory());
@@ -59,14 +69,6 @@ public class VictoryResultTest {
         assertEquals(8, result7.getWinningTeam());
         assertFalse(result7.isDraw());
 
-        // Constructor 3
-        VictoryResult result8 = VictoryResult.noResult();
-        assertFalse(result8.victory());
-        assertTrue(result8.isDraw());
-
-        VictoryResult result9 = VictoryResult.drawResult();
-        assertTrue(result9.victory());
-        assertTrue(result9.isDraw());
     }
 
     @Test
