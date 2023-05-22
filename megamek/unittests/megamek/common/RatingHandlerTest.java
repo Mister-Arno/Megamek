@@ -22,7 +22,7 @@ public class RatingHandlerTest {
 
         IPlayer fetchedPlayer = newServer.getGame().getPlayer("TestPlayer");
 
-        assertEquals(0,fetchedPlayer.getEloRating());
+        assertEquals(1500,fetchedPlayer.getEloRating());
 
     }
 
@@ -37,17 +37,22 @@ public class RatingHandlerTest {
         IPlayer player1 = new Player(1, "TestPlayer1");
         player1.setTeam(1);
         IPlayer player2 = new Player(2, "TestPlayer2");
+        player2.setAdmitsDefeat(true);
         player2.setTeam(2);
         handler.addPlayer(player1);
         handler.addPlayer(player2);
         server.getGame().addPlayer(1,player1);
         server.getGame().addPlayer(2,player2);
 
+
+
         server.getGame().setVictoryTeam(1);
+        server.getGame().setForceVictory(true);
         server.getGame().setVictoryPlayerId(1);
         handler.updateRatings();
-        assertEquals(100, player1.getEloRating());
-        assertEquals(0, player2.getEloRating());
+
+        assertEquals(1516, player1.getEloRating());
+        assertEquals(1485, player2.getEloRating());
     }
 
 }
