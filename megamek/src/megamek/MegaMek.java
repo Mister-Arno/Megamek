@@ -76,6 +76,8 @@ public class MegaMek {
     private static final String GUI_CLASS_NOT_FOUND_MESSAGE = "Couldn't find the GUI Class:";
     public static final String DEFAULT_LOG_FILE_NAME = "megameklog.txt";
 
+    public static final String DOCS_PATH = "./docs";
+
     public static void main(String[] args) {
         CommandLineParser cp = new CommandLineParser(args);
         String logFileName = determineLogFileName(cp);
@@ -675,15 +677,14 @@ public class MegaMek {
             if (getToken() == TOK_LITERAL) {
                 filename = getTokenValue();
                 nextToken();
-
-                if (!new File("./docs").exists() && !new File("./docs").mkdir()) {
+                if (!new File(DOCS_PATH).exists() && !new File(DOCS_PATH).mkdir()) {
                     getLogger().error(
                             "Error in creating directory ./docs. We know this is annoying, and apologise. "
                                     + "Please submit a bug report at https://github.com/MegaMek/megamek/issues "
                                     + " and we will try to resolve your issue.");
 
                 }
-                File file = new File("./docs/" + filename);
+                File file = new File(DOCS_PATH + filename);
                 try (Writer w = new FileWriter(file); BufferedWriter fw = new BufferedWriter(w)) {
                     fw.write("Megamek Unit BattleForce Converter");
                     fw.newLine();
@@ -714,16 +715,15 @@ public class MegaMek {
                 filename = getTokenValue();
                 nextToken();
 
-                if (!new File("./docs").exists()) {
-                    if (!new File("./docs").mkdir()) {
-                        getLogger().error(
-                                "Error in creating directory ./docs. We know this is annoying, and apologise. "
-                                        + "Please submit a bug report at https://github.com/MegaMek/megamek/issues "
-                                        + " and we will try to resolve your issue.");
-                    }
+                if (!new File(DOCS_PATH).exists() && !new File(DOCS_PATH).mkdir()) {
+                    getLogger().error(
+                            "Error in creating directory ./docs. We know this is annoying, and apologise. "
+                                    + "Please submit a bug report at https://github.com/MegaMek/megamek/issues "
+                                    + " and we will try to resolve your issue.");
+
                 }
 
-                File file = new File("./docs/" + filename);
+                File file = new File(DOCS_PATH + filename);
                 try (Writer w = new FileWriter(file); BufferedWriter bw = new BufferedWriter(w)) {
                     bw.write("Megamek Unit AlphaStrike Converter");
                     bw.newLine();
@@ -761,14 +761,14 @@ public class MegaMek {
                 }
                 nextToken();
 
-                if (!new File("./docs").exists() && !new File("./docs").mkdir()) {
+                if (!new File(DOCS_PATH).exists() && !new File(DOCS_PATH).mkdir()) {
                     getLogger().error(
                             "Error in creating directory ./docs. We know this is annoying, and apologise. "
                                     + "Please submit a bug report at https://github.com/MegaMek/megamek/issues "
                                     + " and we will try to resolve your issue.");
 
                 }
-                File file = new File("./docs/" + filename);
+                File file = new File(DOCS_PATH + filename);
                 try (Writer w = new FileWriter(file); BufferedWriter bw = new BufferedWriter(w)) {
                     if (officialUnitList) {
                         bw.write("Megamek Official Unit List");
