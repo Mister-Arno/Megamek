@@ -30,7 +30,7 @@ import java.util.Map;
 
 public class RatingHandler {
     private Server server;
-    private Map<String, RatingInfoStruct> ratings;
+    private final Map<String, RatingInfoStruct> ratings;
 
     private static final int DEFAULT_RATING = 0;
 
@@ -109,6 +109,10 @@ public class RatingHandler {
             }
 
         }
+    }
+
+    public Map<String, RatingInfoStruct> getRatings(){
+        return ratings;
     }
 
 }
