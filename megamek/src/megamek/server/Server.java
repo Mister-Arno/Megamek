@@ -1940,14 +1940,7 @@ public class Server implements Runnable {
         }
     }
 
-    /**
-     * Cancels the force victory
-     */
-    public void cancelVictory() {
-        game.setForceVictory(false);
-        game.setVictoryPlayerId(IPlayer.PLAYER_NONE);
-        game.setVictoryTeam(IPlayer.TEAM_NONE);
-    }
+
 
     public void requestTeamChange(int team, IPlayer player) {
         requestedTeam = team;
@@ -3337,7 +3330,7 @@ public class Server implements Runnable {
             game.setVictoryPlayerId(IPlayer.PLAYER_NONE);
             game.setVictoryTeam(IPlayer.TEAM_NONE);
             if (game.isForceVictory()) {
-                cancelVictory();
+                game.cancelVictory();
             }
         }
         return vr.victory();

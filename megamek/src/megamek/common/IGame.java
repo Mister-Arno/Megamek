@@ -1536,6 +1536,8 @@ public interface IGame {
      */
     abstract boolean addIlluminatedPosition(Coords c);
 
+    abstract public void cancelVictory();
+
     /**
      * Updates the map that maps a position to the list of Entity's in that
      * position.

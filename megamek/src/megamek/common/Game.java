@@ -55,6 +55,7 @@ import megamek.common.options.OptionsConstants;
 import megamek.common.weapons.AttackHandler;
 import megamek.server.SmokeCloud;
 import megamek.server.victory.Victory;
+import megamek.server.victory.VictoryResult;
 
 /**
  * The game class is the root of all data about the game in progress. Both the
@@ -3568,4 +3569,16 @@ public class Game implements Serializable, IGame {
 
     }
 
+    /**
+     * Cancels the force victory
+     */
+    public void cancelVictory() {
+        setForceVictory(false);
+        setVictoryPlayerId(IPlayer.PLAYER_NONE);
+        setVictoryTeam(IPlayer.TEAM_NONE);
+    }
+
+    public VictoryResult getVictoryResult() {
+        return victory.checkForVictory(this, getVictoryContext());
+    }
 }
