@@ -377,6 +377,8 @@ public interface IGame {
      */
     abstract IPlayer getPlayer(int id);
 
+    abstract IPlayer getPlayer(String name);
+
     abstract void addPlayer(int id, IPlayer player);
 
     abstract void setPlayer(int id, IPlayer player);
@@ -1536,7 +1538,7 @@ public interface IGame {
      */
     abstract boolean addIlluminatedPosition(Coords c);
 
-    abstract public void cancelVictory();
+    public abstract void cancelVictory();
 
     /**
      * Updates the map that maps a position to the list of Entity's in that
