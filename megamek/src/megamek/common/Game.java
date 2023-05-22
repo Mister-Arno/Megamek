@@ -1509,23 +1509,22 @@ public class Game implements Serializable, IGame {
         entityIds.clear();
         lastEntityId = 0;
 
-        if (entities != null) {
-            // Add these entities to the game.
-            for (Entity entity : entities) {
-                final int id = entity.getId();
-                entityIds.put(Integer.valueOf(id), entity);
+        // Add these entities to the game.
+        for (Entity entity : entities) {
+            final int id = entity.getId();
+            entityIds.put(Integer.valueOf(id), entity);
 
-                if (id > lastEntityId) {
-                    lastEntityId = id;
-                }
-            }
-            // We need to ensure that each entity has the propery Game reference
-            //  however, the entityIds Hashmap must be fully formed before this
-            //  is called, since setGame also calls setGame for loaded Entities
-            for (Entity entity : entities) {
-                entity.setGame(this);
+            if (id > lastEntityId) {
+                lastEntityId = id;
             }
         }
+        // We need to ensure that each entity has the propery Game reference
+        //  however, the entityIds Hashmap must be fully formed before this
+        //  is called, since setGame also calls setGame for loaded Entities
+        for (Entity entity : entities) {
+            entity.setGame(this);
+        }
+
     }
 
     /**
@@ -3221,18 +3220,15 @@ public class Game implements Serializable, IGame {
 
             if (isIgnitedAndDrifting) {
                 flare.turnsToBurn--;
-                int dir = planetaryConditions.getWindDirection();
                 int str = planetaryConditions.getWindStrength();
 
                 if (str > 0) {
+                    int dir = planetaryConditions.getWindDirection();
                     // strength 1 and 2: drift 1 hex
                     flare.position = flare.position.translated(dir);
 
-                    for (int j = 3; j <= Math.min(str, 6); j++){
-                        // drift 1 hex for each strength 3-6
-                        flare.position = flare.position.translated(dir);
-                    }
-
+                    // drift str -2 hexes with a minimum of 0 and a maximum of 4
+                    flare.position = flare.position.translated(dir, Math.max(0, Math.min(str, 6) -2));
                     r = new Report(5236);
                     r.add(flare.position.getBoardNum());
                     r.newlines = 0;
