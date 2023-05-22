@@ -19,29 +19,27 @@
 
 package megamek.common;
 
-import megamek.MegaMek;
 import megamek.common.event.GamePlayerChangeEvent;
 import megamek.server.Server;
 import megamek.server.victory.VictoryResult;
-
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * https://towardsdatascience.com/developing-a-generalized-elo-rating-system-for-multiplayer-games-b9b495e87802
+ */
 public class RatingHandler {
     private Server server;
     private final Map<String, RatingInfoStruct> ratings;
 
-    private static final int DEFAULT_RATING = 0;
-
-    private static final int LOSS_PENALTY = 50;
-    private static final int WIN_GAIN = 100;
+    private static final int DEFAULT_RATING = 1500;
+    private static final int DEFAULT_D_VALUE = 400;
 
     private static class RatingInfoStruct {
         public int wins = 0;
         public int losses = 0;
         public int currentRating = DEFAULT_RATING;
-
     }
 
     public RatingHandler(Server server) {
@@ -59,6 +57,10 @@ public class RatingHandler {
         }
     }
 
+    public Map<String, RatingInfoStruct> getRatings() {
+        return ratings;
+    }
+
     public void addPlayer(IPlayer player) {
         if (!ratings.containsKey(player.getName())) {
             ratings.put(player.getName(), new RatingInfoStruct());
@@ -68,27 +70,19 @@ public class RatingHandler {
         }
     }
 
-    private void updatePlayerRating(IPlayer player, boolean playerWon) {
-        RatingInfoStruct ratingInfo = ratings.get(player.getName());
-        if (playerWon) {
-            ratingInfo.currentRating += WIN_GAIN;
-            ratingInfo.wins += 1;
-        } else {
-            ratingInfo.currentRating = Math.max(ratingInfo.currentRating - LOSS_PENALTY, 0);
-            ratingInfo.losses += 1;
-        }
-        player.setEloRating(ratingInfo.currentRating);
-        server.getGame().processGameEvent(new GamePlayerChangeEvent(this, player));
-    }
-
     /**
      * Function is called when the game ends
      */
     public void updateRatings() {
         IGame game = server.getGame();
-        int winnerTeam = game.getVictoryTeam();
-        int winnerPlayer = game.getVictoryPlayerId();
+        int activePlayersNbr = getActivePlayersNbr();
+
         VictoryResult vr = game.getVictory().checkForVictory(game, game.getVictoryContext());
+        int tiedPlayersNbr = getTiedPlayersNbr(vr); // Could also mean winners on the same team
+
+        if (tiedPlayersNbr == 0) {
+            return;
+        }
 
         for (Enumeration<IPlayer> p = game.getPlayers(); p.hasMoreElements();) {
             IPlayer player = p.nextElement();
@@ -98,21 +92,106 @@ public class RatingHandler {
                 continue;
             }
 
+            // If the player isn't in our map yet somehow, we add it with a reset elo
             if (!ratings.containsKey(player.getName())) {
                 addPlayer(player);
             }
 
-            if ((winnerTeam == IPlayer.TEAM_NONE) || (winnerTeam == IPlayer.TEAM_UNASSIGNED)) {
-                updatePlayerRating(player, winnerPlayer == player.getId());
+            // Winners get an adjusted elo factor
+            if (vr.isWinningPlayer(player.getId()) || vr.isWinningTeam(player.getTeam())) {
+                updatePlayerRating(player, 1.0 / tiedPlayersNbr, activePlayersNbr);
             } else {
-                updatePlayerRating(player, winnerTeam == player.getTeam());
+                updatePlayerRating(player, 0.0, activePlayersNbr);
             }
 
         }
     }
 
-    public Map<String, RatingInfoStruct> getRatings(){
-        return ratings;
+    private void updatePlayerRating(IPlayer player, double factor, int activePlayersNbr) {
+        RatingInfoStruct ratingInfo = ratings.get(player.getName());
+
+        if (factor > 0.0) {
+            ratingInfo.wins += 1;
+        } else {
+            ratingInfo.losses += 1;
+        }
+
+        // Calculate elo update
+        // Standard elo handles ties by factoring each player with a 0.5
+        // However, in a multiplayer setting you have to multiply by number of players - 1 (is exactly 1 in chess)
+        // Then we calculate the factor as 1/#winners since you can't really end as second or third place
+        // So we just see it all as an N-way draw even if the winners are on the same team
+        int k = findK(ratingInfo.currentRating);
+        double fDelta = k * (activePlayersNbr - 1) * (factor - calculateExpectedPlayerScore(player));
+        int eloChange = (int) Math.round(fDelta);
+
+        ratingInfo.currentRating = Math.max(ratingInfo.currentRating + eloChange, 0);
+        player.setEloRating(ratingInfo.currentRating);
+
+        server.getGame().processGameEvent(new GamePlayerChangeEvent(this, player));
     }
 
+    private double calculateExpectedPlayerScore(IPlayer player) {
+        IGame game = server.getGame();
+        RatingInfoStruct playerRating = ratings.get(player.getName());
+
+        double expectedNumerator = 0.0;
+        int n = 1; // Account for current player
+        for (Enumeration<IPlayer> p = game.getPlayers(); p.hasMoreElements();) {
+            IPlayer opponent = p.nextElement();
+            if ((opponent.getId() == player.getId()) || (opponent.isObserver())) {
+                continue;
+            }
+
+            RatingInfoStruct opponentRating = ratings.get(opponent.getName());
+            double pow = (double) (opponentRating.currentRating - playerRating.currentRating) / DEFAULT_D_VALUE;
+            double denominator = 1.0 + Math.pow(10.0, pow);
+            expectedNumerator += (1.0 / denominator);
+            n += 1;
+        }
+        double expectedDenominator = ((double) (n * (n - 1)) / 2);
+        return expectedNumerator / expectedDenominator;
+    }
+
+    private int getActivePlayersNbr() {
+        IGame game = getServer().getGame();
+        int n = 0;
+        for (Enumeration<IPlayer> p = game.getPlayers(); p.hasMoreElements();) {
+            IPlayer player = p.nextElement();
+
+            if (player.isObserver()) {
+                continue;
+            }
+
+            n += 1;
+        }
+        return n;
+    }
+
+    private int getTiedPlayersNbr(VictoryResult vr) {
+        IGame game = getServer().getGame();
+        int tiedPlayers = 0;
+        for (Enumeration<IPlayer> p = game.getPlayers(); p.hasMoreElements();) {
+            IPlayer player = p.nextElement();
+
+            if (player.isObserver()) {
+                continue;
+            }
+
+            if (vr.isWinningPlayer(player.getId()) || vr.isWinningTeam(player.getTeam())) {
+                tiedPlayers += 1;
+            }
+        }
+        return tiedPlayers;
+    }
+
+    private int findK(int elo) {
+        if (elo < 2100) {
+            return 32;
+        } else if (elo < 2400) {
+            return 24;
+        } else {
+            return 16;
+        }
+    }
 }
