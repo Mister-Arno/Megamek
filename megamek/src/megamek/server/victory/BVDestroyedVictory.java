@@ -34,7 +34,7 @@ public class BVDestroyedVictory extends AbstractBVVictory {
         this.destroyedPercent = destroyedPercent;
     }
 
-    public VictoryResult victory(IGame game, Map<String, Object> ctx) {
+    public VictoryResult victory(IGame game) {
         boolean victory = false;
         VictoryResult vr = new VictoryResult(true);
         // now check for detailed victory conditions...

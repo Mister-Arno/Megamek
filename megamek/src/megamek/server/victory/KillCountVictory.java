@@ -41,7 +41,7 @@ public class KillCountVictory implements IVictoryConditions, Serializable {
         killCondition = kc;
     }
 
-    public VictoryResult victory(IGame game, Map<String, Object> ctx) {
+    public VictoryResult victory(IGame game) {
         boolean victory = false;
         VictoryResult vr = new VictoryResult(true);
         // Stores the number of kills for each team

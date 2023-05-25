@@ -34,7 +34,7 @@ public class EnemyCmdrDestroyedVictory implements IVictoryConditions, Serializab
     public EnemyCmdrDestroyedVictory() {
     }
 
-    public VictoryResult victory(IGame game, Map<String, Object> ctx) {
+    public VictoryResult victory(IGame game) {
         VictoryResult vr = new VictoryResult(true);
         // check all players/teams for killing enemy commanders
         // score is 1.0 when enemy commanders are dead

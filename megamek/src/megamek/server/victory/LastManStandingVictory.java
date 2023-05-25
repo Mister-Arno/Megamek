@@ -29,7 +29,7 @@ public class LastManStandingVictory implements IVictoryConditions, Serializable 
     public LastManStandingVictory() {
     }
 
-    public VictoryResult victory(IGame game, Map<String, Object> ctx) {
+    public VictoryResult victory(IGame game) {
         // check all players/teams for aliveness
         int playersAlive = 0;
         IPlayer lastPlayer = null;

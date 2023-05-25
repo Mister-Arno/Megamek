@@ -30,11 +30,10 @@ public class ForceVictory implements IVictoryConditions, Serializable {
      */
     private static final long serialVersionUID = 1782762191476942976L;
 
-    public ForceVictory() {
-    }
+    public ForceVictory() {}
 
 
-    public VictoryResult victory(IGame game, Map<String, Object> context) {
+    public VictoryResult victory(IGame game) {
         if (!game.isForceVictory()) {
             return VictoryResult.noResult();
         }
@@ -74,5 +73,4 @@ public class ForceVictory implements IVictoryConditions, Serializable {
         }
         return true;
     }
-
 }

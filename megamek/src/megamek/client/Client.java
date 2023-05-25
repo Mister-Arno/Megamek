@@ -635,7 +635,7 @@ public class Client implements IClientCommandHandler {
      *            - the <code>int</code> direction the entity should face
      */
     public void deploy(int id, Coords c, int nFacing, int elevation) {
-        this.deploy(id, c, nFacing, elevation, new Vector<Entity>(), false);
+        this.deploy(id, c, nFacing, elevation, new Vector<>(), false);
     }
 
     /**

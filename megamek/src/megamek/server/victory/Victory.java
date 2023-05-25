@@ -68,7 +68,7 @@ public class Victory implements Serializable {
         VictoryResult victoryResult;
 
         // Check for forced victory condition
-        victoryResult = force.victory(currentGame, gameContext);
+        victoryResult = force.victory(currentGame);
         if (victoryResult.victory()) {
             return victoryResult;
         }
@@ -87,7 +87,7 @@ public class Victory implements Serializable {
         }
 
         // Check for last man standing victory condition
-        VictoryResult lastManResult = lastMan.victory(currentGame, gameContext);
+        VictoryResult lastManResult = lastMan.victory(currentGame);
         if (!victoryResult.victory() && lastManResult.victory()) {
             return lastManResult;
         } else {
@@ -118,7 +118,7 @@ public class Victory implements Serializable {
 
     private void combineScores(VictoryResult vr, IGame game, Map<String, Object> context) {
         for (IVictoryConditions v : VCs) {
-            VictoryResult res = v.victory(game, context);
+            VictoryResult res = v.victory(game);
             for (Report r : res.getReports()) {
                 vr.addReport(r);
             }

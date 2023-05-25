@@ -41,13 +41,8 @@ import megamek.common.IGame;
 public interface IVictoryConditions {
     /**
      * @param game - the game (state) we are playing
-     * @param context - a map Strings to simple serializable objects (preferably
-     *            Integers , Strings ,Doubles etc) which are used to store state
-     *            between executions if such feature is absolutely required.. as
-     *            a key you should use something atleast class- specific to
-     *            limit namespace collisions
      * @return a result with true if victory occured, false if not must not
      *         return null MUST NOT modify game state!
      */
-    VictoryResult victory(IGame game, Map<String, Object> context);
+    VictoryResult victory(IGame game);
 }
