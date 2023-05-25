@@ -125,6 +125,8 @@ public class RatingHandler implements IRatingHandler {
             return;
         }
 
+        HashMap<IPlayer, Integer> newRatings = new HashMap<>();
+
         for (Enumeration<IPlayer> p = game.getPlayers(); p.hasMoreElements();) {
             IPlayer player = p.nextElement();
 
@@ -139,16 +141,32 @@ public class RatingHandler implements IRatingHandler {
             }
 
             // Winners get an adjusted elo factor
+            int newElo = 0;
             if (vr.isWinningPlayer(player.getId()) || vr.isWinningTeam(player.getTeam())) {
-                updatePlayerRating(player, 1.0 / tiedPlayersNbr, activePlayersNbr);
+                newElo = getNewPlayerRating(player, 1.0 / tiedPlayersNbr, activePlayersNbr);
             } else {
-                updatePlayerRating(player, 0.0, activePlayersNbr);
+                newElo = getNewPlayerRating(player, 0.0, activePlayersNbr);
             }
+            newRatings.put(player, newElo);
 
         }
+
+        for (Map.Entry<IPlayer, Integer> entry : newRatings.entrySet()) {
+            setPlayerRating(entry.getKey(), entry.getValue());
+        }
+
     }
 
-    private void updatePlayerRating(IPlayer player, double factor, int activePlayersNbr) {
+    private void setPlayerRating(IPlayer player, int newElo) {
+        RatingInfoStruct ratingInfo = ratings.get(player.getName());
+
+        ratingInfo.setCurrentRating(newElo);
+        player.setEloRating(ratingInfo.getCurrentRating());
+
+        server.getGame().processGameEvent(new GamePlayerChangeEvent(this, player));
+    }
+
+    private int getNewPlayerRating(IPlayer player, double factor, int activePlayersNbr) {
         RatingInfoStruct ratingInfo = ratings.get(player.getName());
 
         if (factor > 0.0) {
@@ -166,10 +184,7 @@ public class RatingHandler implements IRatingHandler {
         double fDelta = k * (activePlayersNbr - 1) * (factor - calculateExpectedPlayerScore(player));
         int eloChange = (int) Math.round(fDelta);
 
-        ratingInfo.setCurrentRating(Math.max(ratingInfo.getCurrentRating() + eloChange, 0));
-        player.setEloRating(ratingInfo.getCurrentRating());
-
-        server.getGame().processGameEvent(new GamePlayerChangeEvent(this, player));
+        return Math.max(ratingInfo.getCurrentRating() + eloChange, 0);
     }
 
     /**

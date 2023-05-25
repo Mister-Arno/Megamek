@@ -44,15 +44,17 @@ public class RatingHandlerTest {
         server.getGame().addPlayer(1,player1);
         server.getGame().addPlayer(2,player2);
 
+        assertEquals(1500, player1.getEloRating());
+        assertEquals(1500, player2.getEloRating());
 
-
+        // Force victory & update
         server.getGame().setVictoryTeam(1);
         server.getGame().setForceVictory(true);
         server.getGame().setVictoryPlayerId(1);
         handler.updateRatings();
 
         assertEquals(1516, player1.getEloRating());
-        assertEquals(1485, player2.getEloRating());
+        assertEquals(1484, player2.getEloRating());
     }
 
 }
