@@ -64,7 +64,7 @@ public class Victory implements Serializable {
         return victories.toArray(new IVictoryConditions[0]);
     }
 
-    public VictoryResult checkForVictory(IGame currentGame, Map<String, Object> gameContext) {
+    public VictoryResult checkForVictory(IGame currentGame) {
         VictoryResult victoryResult;
 
         // Check for forced victory condition
@@ -78,7 +78,7 @@ public class Victory implements Serializable {
             if (VCs == null) {
                 VCs = buildVClist(currentGame.getOptions());
             }
-            victoryResult = checkOptionalVictory(currentGame, gameContext);
+            victoryResult = checkOptionalVictory(currentGame);
             if (victoryResult.victory()) {
                 return victoryResult;
             }
@@ -96,10 +96,10 @@ public class Victory implements Serializable {
     }
 
 
-    private VictoryResult checkOptionalVictory(IGame game, Map<String, Object> context) {
+    private VictoryResult checkOptionalVictory(IGame game) {
         VictoryResult vr = new VictoryResult(true);
 
-        combineScores(vr, game, context);
+        combineScores(vr, game);
         double highScore = calculateHighScoresAndUpdate(vr);
 
         boolean victory = vr.victory() && highScore >= neededVictoryConditions;
@@ -116,7 +116,7 @@ public class Victory implements Serializable {
         return vr;
     }
 
-    private void combineScores(VictoryResult vr, IGame game, Map<String, Object> context) {
+    private void combineScores(VictoryResult vr, IGame game) {
         for (IVictoryConditions v : VCs) {
             VictoryResult res = v.victory(game);
             for (Report r : res.getReports()) {

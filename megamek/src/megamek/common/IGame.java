@@ -159,21 +159,6 @@ public interface IGame {
     abstract void setExternalGameId(int value);
 
     /**
-     * @return the currently active context-object for victorycondition
-     *         checking. This should be a mutable object and it will be modified
-     *         by the victory condition checkers. whoever saves the game state
-     *         when doing saves, is also responsible of saving this state. at
-     *         the start of the game this should be initialized to an empty
-     *         hashmap
-     */
-    abstract HashMap<String, Object> getVictoryContext();
-
-    /**
-     * set the game victory state.
-     */
-    abstract void setVictoryContext(HashMap<String, Object> ctx);
-
-    /**
      * Adds the specified game listener to receive board events from this Game.
      *
      * @param listener the game listener.
@@ -1466,8 +1451,8 @@ public interface IGame {
     abstract boolean gameTimerIsExpired();
 
     /**
-     * use victoryfactory to generate a new victorycondition checker provided
-     * that the victorycontext is saved properly, calling this method at any
+     * use victoryfactory to generate a new victorycondition checker
+     * calling this method at any
      * time is ok and should not affect anything unless the
      * victorycondition-configoptions have changed.
      */

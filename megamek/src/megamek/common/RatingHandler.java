@@ -118,7 +118,7 @@ public class RatingHandler implements IRatingHandler {
         int activePlayersNbr = getActivePlayersNbr();
 
         // Get the victory result to easily check winners
-        VictoryResult vr = game.getVictory().checkForVictory(game, game.getVictoryContext());
+        VictoryResult vr = game.getVictory().checkForVictory(game);
         int tiedPlayersNbr = getTiedPlayersNbr(vr); // Could also mean winners on the same team
 
         if (tiedPlayersNbr == 0) {

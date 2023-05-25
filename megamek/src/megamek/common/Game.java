@@ -149,8 +149,6 @@ public class Game implements Serializable, IGame {
     private HashSet<Coords> illuminatedPositions =
             new HashSet<>();
 
-    private HashMap<String, Object> victoryContext = null;
-
     // internal integer value for an external game id link
     private int externalGameId = 0;
 
@@ -2747,14 +2745,6 @@ public class Game implements Serializable, IGame {
         return player.getTeam() == victoryTeam;
     }
 
-    public HashMap<String, Object> getVictoryContext() {
-        return victoryContext;
-    }
-
-    public void setVictoryContext(HashMap<String, Object> ctx) {
-        victoryContext = ctx;
-    }
-
     /**
      * Shortcut to isPlayerVictor(Player player)
      */
@@ -3572,6 +3562,6 @@ public class Game implements Serializable, IGame {
     }
 
     public VictoryResult getVictoryResult() {
-        return victory.checkForVictory(this, getVictoryContext());
+        return victory.checkForVictory(this);
     }
 }
