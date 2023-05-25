@@ -30,7 +30,7 @@ import java.util.Map;
  * Some calculations are inspired by the write-up below
  * https://towardsdatascience.com/developing-a-generalized-elo-rating-system-for-multiplayer-games-b9b495e87802
  */
-public class RatingHandler {
+public class RatingHandler implements IRatingHandler {
     private Server server;
     private final Map<String, RatingInfoStruct> ratings;
 
@@ -77,20 +77,28 @@ public class RatingHandler {
         this.ratings = new HashMap<>();
     }
 
+    @Override
     public Server getServer() {
         return server;
     }
 
+    @Override
     public void setServer(Server s) {
         if (server == null) {
             server = s;
         }
     }
 
-    public Map<String, RatingInfoStruct> getRatings() {
-        return ratings;
+    @Override
+    public Map<String, Double> getRatings() {
+        Map<String, Double> result = new HashMap<>(ratings.size());
+        for (Map.Entry<String, RatingInfoStruct> entry : ratings.entrySet()) {
+            result.put(entry.getKey(), (double) entry.getValue().getCurrentRating());
+        }
+        return result;
     }
 
+    @Override
     public void addPlayer(IPlayer player) {
         if (!ratings.containsKey(player.getName())) {
             ratings.put(player.getName(), new RatingInfoStruct());
@@ -104,6 +112,7 @@ public class RatingHandler {
      * Call this function to update the ratings after a game victory
      * Will update the ratings based on a multiplayer elo calculation
      */
+    @Override
     public void updateRatings() {
         IGame game = server.getGame();
         int activePlayersNbr = getActivePlayersNbr();

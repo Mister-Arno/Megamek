@@ -12,7 +12,7 @@ public class RatingHandlerTest {
     @Test
     public void testAddPlayer() throws IOException {
         Server newServer = new Server("",2346);
-        RatingHandler handler = new RatingHandler(newServer);
+        IRatingHandler handler = new RatingHandler(newServer);
         newServer.setGame(new Game());
 
         IPlayer player = new Player(1, "TestPlayer");
@@ -29,7 +29,7 @@ public class RatingHandlerTest {
     @Test
     public void testUpdateRatings() throws IOException {
         Server newServer = new Server("",2343);
-        RatingHandler handler = new RatingHandler(newServer);
+        IRatingHandler handler = new RatingHandler(newServer);
         Server server = handler.getServer();
         server.setGame(new Game());
         server.getGame().createVictoryConditions();

@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 
 import megamek.MegaMek;
+import megamek.common.IRatingHandler;
 import megamek.common.RatingHandler;
 import megamek.common.RatingListener;
 import megamek.common.preference.PreferenceManager;
@@ -35,7 +36,7 @@ public class DedicatedServer {
             Server dedicated = new Server(password, usePort, !announceUrl.equals(""), announceUrl);
 
             // Init Rating listener & handler
-            RatingHandler handler = new RatingHandler(dedicated);
+            IRatingHandler handler = new RatingHandler(dedicated);
             dedicated.getGame().addGameListener(new RatingListener(handler));
 
             if (null != saveGameFileName) {

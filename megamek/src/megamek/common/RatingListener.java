@@ -33,9 +33,9 @@ import megamek.common.event.*;
  * @see GameEvent
  */
 public class RatingListener extends GameListenerAdapter {
-    private final RatingHandler handler;
+    private final IRatingHandler handler;
 
-    public RatingListener(RatingHandler handler) {
+    public RatingListener(IRatingHandler handler) {
         this.handler = handler;
         MegaMek.getLogger().info("Rating Listener connected.");
     }
