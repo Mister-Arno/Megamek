@@ -24,8 +24,6 @@ public class VictoryTest {
         IGame mockGame2 = new Game();
 
 
-        Map<String,Object> mockContext = mock(Map.class);
-
         // Set up GameOptions with victory conditions
         GameOptions options = new GameOptions();
         options.getOption(OptionsConstants.VICTORY_CHECK_VICTORY).setValue(true);
@@ -36,8 +34,8 @@ public class VictoryTest {
         Victory victory = new Victory(options);
 
         // Call the checkForVictory method with the mock IGame object and the mock game context
-        VictoryResult result1 = victory.checkForVictory(mockGame1, mockContext);
-        VictoryResult result2 = victory.checkForVictory(mockGame2, mockContext);
+        VictoryResult result1 = victory.checkForVictory(mockGame1);
+        VictoryResult result2 = victory.checkForVictory(mockGame2);
 
 
 
