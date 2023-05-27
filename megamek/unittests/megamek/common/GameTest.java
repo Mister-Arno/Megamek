@@ -11,7 +11,7 @@ public class GameTest {
     @Test
     public void testCancelVictory() {
         // Default test
-        Game game = new Game();
+        IGame game = new Game();
         game.cancelVictory();
         assertFalse(game.isForceVictory());
         assertSame(Player.PLAYER_NONE, game.getVictoryPlayerId());
@@ -31,7 +31,7 @@ public class GameTest {
 
     @Test
     public void testGetVictoryReport() {
-        Game game = new Game();
+        IGame game = new Game();
         game.createVictoryConditions();
         VictoryResult victoryResult = game.getVictoryResult();
         assertNotNull(victoryResult);
@@ -58,7 +58,7 @@ public class GameTest {
     @Test
     public void getPlayerTest() {
         IPlayer newPlayer = new Player(1,"Player1");
-        Game newGame = new Game();
+        IGame newGame = new Game();
 
         newGame.addPlayer(1,newPlayer);
 

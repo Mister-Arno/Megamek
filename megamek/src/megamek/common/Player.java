@@ -529,6 +529,17 @@ public final class Player extends TurnOrdered implements IPlayer {
         return bonusHQ + bonusMD + bonusQ;
     }
 
+    private boolean isEligibleForCommandBonus(Entity entity){
+        return null != entity.getOwner()
+                && entity.getOwner().equals(this)
+                && !entity.isDestroyed()
+                && entity.isDeployed()
+                && !entity.isOffBoard()
+                && entity.getCrew().isActive()
+                && !entity.isCaptured()
+                && !(entity instanceof MechWarrior);
+    }
+
     /**
      * @return the bonus to this player's initiative rolls for
      *         the highest value initiative (i.e. the 'commander')
@@ -542,14 +553,7 @@ public final class Player extends TurnOrdered implements IPlayer {
         }
         
         for (Entity entity : game.getEntitiesVector()) {
-            if ((null != entity.getOwner())
-                    && entity.getOwner().equals(this)
-                    && !entity.isDestroyed()
-                    && entity.isDeployed()
-                    && !entity.isOffBoard()
-                    && entity.getCrew().isActive()
-                    && !entity.isCaptured()
-                    && !(entity instanceof MechWarrior)) {
+            if (isEligibleForCommandBonus(entity)) {
                 int bonus = 0;
                 if (game.getOptions().booleanOption(OptionsConstants.RPG_COMMAND_INIT)) {
                     bonus = entity.getCrew().getCommandBonus();
