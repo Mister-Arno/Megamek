@@ -25,25 +25,24 @@ public class ClientTest extends TestCase {
     public void testClientConnect() throws IOException {
         String name = "TestPlayer";
         String host = "localhost";
-        int port = 2345;
+        int port = 1234;
 
-        Client client1 = new Client(name, host, port);
-        assertFalse(client1.connect());
+        Client client = new Client(name, host, port);
+        assertFalse(client.connect());
         Server server = new Server("", port);
         // Connection is still pending at this point, because it takes time to handshake
-        assertTrue(client1.connect());
+        assertTrue(client.connect());
     }
 
     public void testClientAddPlayer() {
         String name = "TestPlayer";
         String host = "localhost";
         int port = 2345;
-        Client client1 = new Client(name, host, port);
+        Client client = new Client(name, host, port);
 
         // Set up player
-        String playerName = "TestPlayer";
         int playerId = 1000;
-        Player p = new Player(playerId, playerName);
+        Player p = new Player(playerId, name);
 
         final Object[] data = new Object[2];
         data[0] = playerId;
@@ -52,10 +51,10 @@ public class ClientTest extends TestCase {
         // Local player number update
         Packet lpNumberPacket = new Packet(Packet.COMMAND_LOCAL_PN, new Object[]{playerId});
 
-        client1.handlePacket(playerAddPacket);
-        client1.handlePacket(lpNumberPacket);
-        assertEquals(playerId, client1.getLocalPlayerNumber());
-        assertEquals(playerId, client1.getLocalPlayer().getId());
-        assertEquals(playerName, client1.getLocalPlayer().getName());
+        client.handlePacket(playerAddPacket);
+        client.handlePacket(lpNumberPacket);
+        assertEquals(playerId, client.getLocalPlayerNumber());
+        assertEquals(playerId, client.getLocalPlayer().getId());
+        assertEquals(name, client.getLocalPlayer().getName());
     }
 }
