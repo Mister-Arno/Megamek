@@ -16,7 +16,6 @@ package megamek.server.victory;
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Map;
 
 import megamek.common.Entity;
 import megamek.common.IGame;

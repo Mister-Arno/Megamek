@@ -14,7 +14,6 @@
 package megamek.server.victory;
 
 import java.util.HashSet;
-import java.util.Map;
 
 import megamek.common.IGame;
 import megamek.common.IPlayer;

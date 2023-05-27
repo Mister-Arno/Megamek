@@ -13,8 +13,6 @@
  */
 package megamek.server.victory;
 
-import java.util.Map;
-
 import megamek.common.IGame;
 
 /**
