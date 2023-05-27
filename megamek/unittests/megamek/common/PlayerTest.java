@@ -10,7 +10,7 @@ import megamek.client.ui.swing.util.PlayerColour;
 
 
 public class PlayerTest {
-    private Player player;
+    private IPlayer player;
     private static final int ELO_RATING = 1500;
     private static final int MINEFIELD_COUNT = 34;
 
