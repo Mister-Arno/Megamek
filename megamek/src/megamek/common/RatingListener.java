@@ -40,8 +40,8 @@ public class RatingListener extends GameListenerAdapter {
         MegaMek.getLogger().info("Rating Listener connected.");
     }
 
+    @Override
     public void gamePlayerAdded(GamePlayerAddedEvent e) {
-        // TODO: Handle newly added / set players
         MegaMek.getLogger().info(e.getPlayer().getName() + " has been added to the game.");
         handler.addPlayer(e.getPlayer());
     }
