@@ -18,6 +18,18 @@ sonarqube {
         property "sonar.jvmArgs", "-Xmx8g -Xms8g"
 
         property "sonar.log.level", "INFO"
+
+        property "sonar.language", "java"
+
+        property "sonar.binaries", "build/classes"
+
+        property "sonar.tests", "junit"
+
+        property "sonar.junit.reportsPath", "build/reports/jacoco/test"
+        property "sonar.jacoco.reportPath", "build/jacoco/test.exec"
+
+        property "sonar.java.coveragePlugin", "jacoco"
+
     }
 }
 
