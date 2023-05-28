@@ -431,8 +431,12 @@ public final class Player extends TurnOrdered implements IPlayer {
         int bv = 0;
 
         for (Entity entity : game.getEntitiesVector()) {
-            if (equals(entity.getOwner()) && !entity.isDestroyed()
-                    && !entity.isTrapped()) {
+            // Entity owner check
+            if (!equals(entity.getOwner())) {
+                continue;
+            }
+            // Entity status check
+            if (!entity.isDestroyed() && !entity.isTrapped()) {
                 bv += entity.calculateBattleValue();
             }
         }
