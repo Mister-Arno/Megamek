@@ -28,65 +28,85 @@ package megamek.common.event;
 public class GameListenerAdapter implements GameListener {
 
     public void gamePlayerConnected(GamePlayerConnectedEvent e) {
+        // no action default
     }
 
     public void gamePlayerAdded(GamePlayerAddedEvent e) {
+        // no action default
     }
 
     public void gamePlayerDisconnected(GamePlayerDisconnectedEvent e) {
+        // no action default
     }
 
     public void gamePlayerChange(GamePlayerChangeEvent e) {
+        // no action default
     }
 
     public void gamePlayerChat(GamePlayerChatEvent e) {
+        // no action default
     }
 
     public void gamePhaseChange(GamePhaseChangeEvent e) {
+        // no action default
     }
 
     public void gameTurnChange(GameTurnChangeEvent e) {
+        // no action default
     }
 
     public void gameReport(GameReportEvent e) {
+        // no action default
     }
 
     public void gameEnd(GameEndEvent e) {
+        // no action default
     }
 
     public void gameBoardNew(GameBoardNewEvent e) {
+        // no action default
     }
 
     public void gameBoardChanged(GameBoardChangeEvent e) {
+        // no action default
     }
 
     public void gameSettingsChange(GameSettingsChangeEvent e) {
+        // no action default
     }
 
     public void gameMapQuery(GameMapQueryEvent e) {
+        // no action default
     }
 
     public void gameEntityNew(GameEntityNewEvent e) {
+        // no action default
     }
 
     public void gameEntityNewOffboard(GameEntityNewOffboardEvent e) {
+        // no action default
     }
 
     public void gameEntityRemove(GameEntityRemoveEvent e) {
+        // no action default
     }
 
     public void gameEntityChange(GameEntityChangeEvent e) {
+        // no action default
     }
 
     public void gameNewAction(GameNewActionEvent e) {
+        // no action default
     }
     
     @Override
     public void gameClientFeedbackRequest(GameCFREvent evt) {
+        // no action default
     }
 
     @Override
-    public void gameVictory(GameVictoryEvent e) {        
-    }    
+    public void gameVictory(GameVictoryEvent e) {
+        // no action default
+    }
 
 }
