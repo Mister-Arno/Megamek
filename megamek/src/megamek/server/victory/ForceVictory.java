@@ -26,8 +26,6 @@ public class ForceVictory implements IVictoryConditions, Serializable {
 
     private static final long serialVersionUID = 1782762191476942976L;
 
-    public ForceVictory() {}
-
 
     public VictoryResult victory(IGame game) {
         if (!game.isForceVictory()) {
